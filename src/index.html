@@ -20,11 +20,12 @@
 
         #map {
             width: 100%;
-            height: calc(40vh - 60px);
+            height: calc(100vh - 60px);
             position: fixed;
             top: 60px;
             left: 0;
             z-index: 1;
+            background-color: #d6e8eb;
         }
 
         @media (min-width: 1024px) {
@@ -43,13 +44,72 @@
 
     <!-- Header Overlay -->
     <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur shadow-sm border-b border-gray-200" style="z-index: 1000;">
-        <div class="px-4 py-3 md:py-4">
+        <div class="px-4 py-3 md:py-4 flex justify-between items-center">
             <h1 class="text-xl md:text-2xl font-bold text-gray-900">🍕 MargMap</h1>
+            <button id="mobile-menu-toggle" class="lg:hidden text-gray-600 hover:text-gray-900">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
     </header>
 
-    <!-- Info Panel Overlay - Side on desktop, bottom on mobile -->
-    <aside class="fixed bottom-0 left-0 right-0 lg:top-[60px] lg:right-0 lg:left-auto lg:bottom-0 lg:w-96 bg-white/95 backdrop-blur shadow-xl max-h-[60vh] lg:max-h-[calc(100vh-60px)] flex flex-col" style="z-index: 1000;">
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black/50 lg:hidden hidden" style="z-index: 999;" onclick="if(event.target === this) document.getElementById('mobile-menu').classList.add('hidden');"></div>
+
+    <!-- Mobile Filters Menu -->
+    <div id="mobile-filters" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-lg transform translate-x-full transition-transform duration-300 lg:hidden overflow-y-auto" style="z-index: 1001;">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white">
+            <h2 class="text-lg font-semibold text-gray-900">Filters</h2>
+            <button id="close-mobile-menu" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="p-4 space-y-4">
+            <div>
+                <label for="search-input-mobile" class="block text-xs font-medium text-gray-700 mb-1">Search Restaurants</label>
+                <input type="text" id="search-input-mobile" placeholder="Search by name..." class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label for="country-filter-mobile" class="block text-xs font-medium text-gray-700 mb-1">Country</label>
+                <select id="country-filter-mobile" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Countries</option>
+                </select>
+            </div>
+            <div>
+                <label for="sort-by-mobile" class="block text-xs font-medium text-gray-700 mb-1">Sort by</label>
+                <select id="sort-by-mobile" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="rating-desc">Rating (High to Low)</option>
+                    <option value="rating-asc">Rating (Low to High)</option>
+                    <option value="date-desc">Date (Newest)</option>
+                    <option value="date-asc">Date (Oldest)</option>
+                    <option value="price-desc">Price (High to Low)</option>
+                    <option value="price-asc">Price (Low to High)</option>
+                </select>
+            </div>
+            <div>
+                <label for="rating-min-mobile" class="block text-xs font-medium text-gray-700 mb-1">Minimum Rating</label>
+                <div class="flex items-center space-x-2">
+                    <input type="range" id="rating-min-mobile" min="0" max="10" value="0" step="0.1" class="flex-1">
+                    <span class="text-xs text-gray-600" id="rating-display-mobile">0+</span>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0</span>
+                    <span>10</span>
+                </div>
+            </div>
+            <hr class="my-2">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-900 mb-2">Restaurants</h3>
+                <div id="restaurants-list-mobile" class="space-y-1 divide-y divide-gray-200">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <aside class="fixed bottom-0 left-0 right-0 lg:top-[60px] lg:right-0 lg:left-auto lg:bottom-0 lg:w-96 lg:flex hidden bg-white/95 backdrop-blur shadow-xl max-h-[60vh] lg:max-h-[calc(100vh-60px)] flex-col" style="z-index: 1000;">
         <div class="p-4 flex flex-col flex-1 overflow-hidden">
             <!-- Stats Cards -->
             <section class="grid grid-cols-2 gap-2 mb-4 flex-shrink-0">
@@ -180,7 +240,62 @@
         let markerLayer;
         let userSelectedRestaurant = false; // Flag to track manual selection
 
-        // Load JSON data from file
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileFilters = document.getElementById('mobile-filters');
+            mobileMenu.classList.remove('hidden');
+            mobileFilters.classList.remove('translate-x-full');
+        });
+
+        document.getElementById('close-mobile-menu').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileFilters = document.getElementById('mobile-filters');
+            mobileMenu.classList.add('hidden');
+            mobileFilters.classList.add('translate-x-full');
+        });
+
+        // Sync mobile and desktop filter inputs
+        function syncFilters(sourceId, targetId) {
+            const source = document.getElementById(sourceId);
+            const target = document.getElementById(targetId);
+            if (source && target) {
+                target.value = source.value;
+            }
+        }
+
+        // Set up filter input listeners
+        const filterInputs = [
+            ['search-input', 'search-input-mobile'],
+            ['country-filter', 'country-filter-mobile'],
+            ['sort-by', 'sort-by-mobile'],
+            ['rating-min', 'rating-min-mobile']
+        ];
+
+        filterInputs.forEach(([desktopId, mobileId]) => {
+            const desktopEl = document.getElementById(desktopId);
+            const mobileEl = document.getElementById(mobileId);
+            if (desktopEl) desktopEl.addEventListener('change', () => syncFilters(desktopId, mobileId));
+            if (desktopEl) desktopEl.addEventListener('input', () => syncFilters(desktopId, mobileId));
+            if (mobileEl) mobileEl.addEventListener('change', () => syncFilters(mobileId, desktopId));
+            if (mobileEl) mobileEl.addEventListener('input', () => syncFilters(mobileId, desktopId));
+        });
+
+        // Sync rating display
+        document.getElementById('rating-min').addEventListener('input', () => {
+            const val = document.getElementById('rating-min').value;
+            document.getElementById('rating-display').textContent = parseFloat(val).toFixed(1) + '+';
+            document.getElementById('rating-min-mobile').value = val;
+            document.getElementById('rating-display-mobile').textContent = parseFloat(val).toFixed(1) + '+';
+        });
+
+        document.getElementById('rating-min-mobile').addEventListener('input', () => {
+            const val = document.getElementById('rating-min-mobile').value;
+            document.getElementById('rating-display-mobile').textContent = parseFloat(val).toFixed(1) + '+';
+            document.getElementById('rating-min').value = val;
+            document.getElementById('rating-display').textContent = parseFloat(val).toFixed(1) + '+';
+        });
+
         async function loadCSV() {
             try {
                 const response = await fetch('./data/ratings.json');
@@ -237,27 +352,38 @@
 
         function renderRestaurants(filteredRestaurants) {
             const list = document.getElementById('restaurants-list');
+            const mobileList = document.getElementById('restaurants-list-mobile');
             list.innerHTML = '';
+            mobileList.innerHTML = '';
 
             filteredRestaurants.forEach(restaurant => {
-                const div = document.createElement('div');
-                div.className = 'p-3 hover:bg-gray-50 cursor-pointer transition';
-                div.onclick = () => {
-                    focusOnRestaurant(restaurant);
+                const createListItem = () => {
+                    const div = document.createElement('div');
+                    div.className = 'p-3 hover:bg-gray-50 cursor-pointer transition';
+                    div.onclick = () => {
+                        focusOnRestaurant(restaurant);
+                        // Close mobile menu when restaurant is clicked
+                        const mobileMenu = document.getElementById('mobile-menu');
+                        const mobileFilters = document.getElementById('mobile-filters');
+                        mobileMenu.classList.add('hidden');
+                        mobileFilters.classList.add('translate-x-full');
+                    };
+
+                    div.innerHTML = `
+                        <div class="flex justify-between items-start mb-1">
+                            <div class="font-medium text-gray-900 text-sm">${restaurant.Name}</div>
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${getRatingColor(restaurant.mScore)}">
+                                ${restaurant.mScore}
+                            </span>
+                        </div>
+                        <div class="text-xs text-gray-600">${restaurant.Location}, ${restaurant.Country}</div>
+                        <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • ${restaurant.Price}</div>
+                    `;
+                    return div;
                 };
 
-                div.innerHTML = `
-                    <div class="flex justify-between items-start mb-1">
-                        <div class="font-medium text-gray-900 text-sm">${restaurant.Name}</div>
-                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${getRatingColor(restaurant.mScore)}">
-                            ${restaurant.mScore}
-                        </span>
-                    </div>
-                    <div class="text-xs text-gray-600">${restaurant.Location}, ${restaurant.Country}</div>
-                    <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • ${restaurant.Price}</div>
-                `;
-
-                list.appendChild(div);
+                list.appendChild(createListItem());
+                mobileList.appendChild(createListItem());
             });
 
             // Update map to show only filtered restaurants
@@ -392,9 +518,12 @@
             // Fit map to show all filtered markers (only if user hasn't manually selected)
             if (!userSelectedRestaurant && bounds.length > 0) {
                 if (bounds.length === 1) {
-                    map.setView(bounds[0], 12);
+                    map.setView(bounds[0], 10);
                 } else {
-                    map.fitBounds(bounds, { padding: [50, 50] });
+                    map.fitBounds(bounds, {
+                        padding: [80, 80],
+                        animate: false
+                    });
                 }
             }
         }
@@ -573,12 +702,20 @@
         }
 
         async function initMap() {
-            map = L.map('map').setView([45, 10], 4);
+            map = L.map('map', {
+                worldCopyJump: false,
+                maxBounds: [[-60, -180], [85, 180]],
+                maxBoundsViscosity: 1.0,
+                zoomSnap: 0.25,
+                zoomDelta: 0.25
+            }).setView([20, 0], 2);
 
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                 attribution: '© OpenStreetMap contributors, © CARTO',
                 maxZoom: 19,
-                subdomains: 'abcd'
+                minZoom: 1,
+                subdomains: 'abcd',
+                noWrap: true
             }).addTo(map);
 
             // Create a layer group for markers
@@ -597,11 +734,28 @@
 
         init();
 
-        // Event listeners
+        // Event listeners - Desktop
         document.getElementById('search-input').addEventListener('input', filterAndSort);
         document.getElementById('country-filter').addEventListener('change', filterAndSort);
         document.getElementById('sort-by').addEventListener('change', filterAndSort);
         document.getElementById('rating-min').addEventListener('input', updateRatingDisplay);
+
+        // Event listeners - Mobile
+        document.getElementById('search-input-mobile').addEventListener('input', filterAndSort);
+        document.getElementById('country-filter-mobile').addEventListener('change', filterAndSort);
+        document.getElementById('sort-by-mobile').addEventListener('change', filterAndSort);
+
+        // Populate mobile country filter
+        function populateMobileCountryFilter() {
+            const mobileSelect = document.getElementById('country-filter-mobile');
+            const desktopSelect = document.getElementById('country-filter');
+            mobileSelect.innerHTML = desktopSelect.innerHTML;
+        }
+
+        // Watch for desktop country filter updates and sync
+        const observer = new MutationObserver(populateMobileCountryFilter);
+        observer.observe(document.getElementById('country-filter'), { childList: true });
+
         document.getElementById('close-detail').addEventListener('click', () => {
             document.getElementById('detail-section').classList.add('hidden');
         });
