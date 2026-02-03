@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MargMap</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍕</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: calc(40vh - 60px);
+            position: fixed;
+            top: 60px;
+            left: 0;
+            z-index: 1;
+        }
+
+        @media (min-width: 1024px) {
+            #map {
+                right: 384px;
+                width: auto;
+                height: calc(100vh - 60px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Full-screen Map -->
+    <div id="map"></div>
+
+    <!-- Header Overlay -->
+    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur shadow-sm border-b border-gray-200" style="z-index: 1000;">
+        <div class="px-4 py-3 md:py-4">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-900">🍕 MargMap</h1>
+        </div>
+    </header>
+
+    <!-- Info Panel Overlay - Side on desktop, bottom on mobile -->
+    <aside class="fixed bottom-0 left-0 right-0 lg:top-[60px] lg:right-0 lg:left-auto lg:bottom-0 lg:w-96 bg-white/95 backdrop-blur shadow-xl max-h-[60vh] lg:max-h-[calc(100vh-60px)] flex flex-col" style="z-index: 1000;">
+        <div class="p-4 flex flex-col flex-1 overflow-hidden">
+            <!-- Stats Cards -->
+            <section class="grid grid-cols-2 gap-2 mb-4 flex-shrink-0">
+                <article class="bg-white rounded-lg shadow p-3">
+                    <h2 class="text-xs font-medium text-gray-600 uppercase">Total</h2>
+                    <p class="text-2xl font-bold text-gray-900 mt-1" id="total-count">0</p>
+                </article>
+                <article class="bg-white rounded-lg shadow p-3">
+                    <h2 class="text-xs font-medium text-gray-600 uppercase">Avg Rating</h2>
+                    <p class="text-2xl font-bold text-gray-900 mt-1" id="avg-rating">0</p>
+                </article>
+                <article class="bg-white rounded-lg shadow p-3">
+                    <h2 class="text-xs font-medium text-gray-600 uppercase">Top Rated</h2>
+                    <p class="text-sm font-bold text-gray-900 mt-1" id="top-restaurant">-</p>
+                </article>
+                <article class="bg-white rounded-lg shadow p-3">
+                    <h2 class="text-xs font-medium text-gray-600 uppercase">Countries</h2>
+                    <p class="text-2xl font-bold text-gray-900 mt-1" id="country-count">0</p>
+                </article>
+            </section>
+
+            <!-- Filters -->
+            <section class="bg-white rounded-lg shadow p-3 mb-4 flex-shrink-0">
+                <div class="space-y-2">
+                    <div>
+                        <label for="search-input" class="block text-xs font-medium text-gray-700 mb-1">Search Restaurants</label>
+                        <input type="text" id="search-input" placeholder="Search by name..." class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="country-filter" class="block text-xs font-medium text-gray-700 mb-1">Country</label>
+                        <select id="country-filter" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Countries</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="sort-by" class="block text-xs font-medium text-gray-700 mb-1">Sort by</label>
+                        <select id="sort-by" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="rating-desc">Rating (High to Low)</option>
+                            <option value="rating-asc">Rating (Low to High)</option>
+                            <option value="date-desc">Date (Newest)</option>
+                            <option value="date-asc">Date (Oldest)</option>
+                            <option value="price-desc">Price (High to Low)</option>
+                            <option value="price-asc">Price (Low to High)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="rating-min" class="block text-xs font-medium text-gray-700 mb-1">Minimum Rating</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="range" id="rating-min" min="0" max="10" value="0" step="0.1" class="flex-1">
+                            <span class="text-xs text-gray-600" id="rating-display">0+</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0</span>
+                            <span>10</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed View Section (Initially Hidden) -->
+            <section id="detail-section" class="bg-white rounded-lg shadow mb-4 flex-shrink-0 hidden overflow-hidden flex flex-col" style="max-height: 300px;">
+                <div class="flex justify-between items-start p-3 pb-2 flex-shrink-0">
+                    <h3 class="text-sm font-semibold text-gray-900" id="detail-name"></h3>
+                    <button id="close-detail" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="overflow-y-auto flex-1 px-3 pb-3">
+                    <div class="grid grid-cols-2 gap-2 mb-3 text-xs">
+                        <div>
+                            <div class="text-gray-500">Rating</div>
+                            <div class="font-bold text-gray-900" id="detail-rating"></div>
+                        </div>
+                        <div>
+                            <div class="text-gray-500">Price</div>
+                            <div class="font-bold text-gray-900" id="detail-price"></div>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-gray-500">Date Visited</div>
+                            <div class="font-medium text-gray-900" id="detail-date"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-gray-900 mb-2">Detailed Ratings</div>
+                        <div id="detail-ratings" class="space-y-2 text-xs">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Restaurants List -->
+            <section class="bg-white rounded-lg shadow overflow-hidden flex-1 flex flex-col min-h-0">
+                <div class="overflow-y-auto flex-1">
+                    <div id="restaurants-list" class="divide-y divide-gray-200">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </aside>
+
+    <!-- Detailed View Modal -->
+    <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style="z-index: 2000;">
+        <article class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 id="modal-title" class="text-2xl font-bold text-gray-900"></h2>
+                    <button id="close-modal" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="modal-content" class="space-y-4">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <script>
+        let restaurants = [];
+        let map;
+        let markers = {};
+        let markerLayer;
+        let userSelectedRestaurant = false; // Flag to track manual selection
+
+        // Load JSON data from file
+        async function loadCSV() {
+            try {
+                const response = await fetch('./data/ratings.json');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error loading JSON:', error);
+                return [];
+            }
+        }
+
+        function parseDate(dateStr) {
+            const [day, month, year] = dateStr.split('/');
+            return new Date(year, month - 1, day);
+        }
+
+        function parsePrice(priceStr) {
+            return parseFloat(priceStr.replace('£', ''));
+        }
+
+        function getRatingColor(rating) {
+            const score = parseFloat(rating);
+            if (score >= 8) return 'bg-red-100 text-red-800';
+            if (score >= 7) return 'bg-orange-100 text-orange-800';
+            if (score >= 6) return 'bg-yellow-100 text-yellow-800';
+            return 'bg-gray-100 text-gray-800';
+        }
+
+        function updateStats() {
+            const count = restaurants.length;
+            const avgRating = (restaurants.reduce((sum, r) => sum + parseFloat(r.mScore), 0) / count).toFixed(1);
+            const topRestaurant = restaurants.reduce((top, r) =>
+                parseFloat(r.mScore) > parseFloat(top.mScore) ? r : top
+            );
+            const countries = new Set(restaurants.map(r => r.Country));
+
+            document.getElementById('total-count').textContent = count;
+            document.getElementById('avg-rating').textContent = avgRating;
+            document.getElementById('top-restaurant').textContent = `${topRestaurant.Name} (${topRestaurant.mScore})`;
+            document.getElementById('country-count').textContent = countries.size;
+
+            // Populate country filter
+            const countryFilter = document.getElementById('country-filter');
+            const currentValue = countryFilter.value;
+            countryFilter.innerHTML = '<option value="">All Countries</option>';
+            Array.from(countries).sort().forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countryFilter.appendChild(option);
+            });
+            countryFilter.value = currentValue;
+        }
+
+        function renderRestaurants(filteredRestaurants) {
+            const list = document.getElementById('restaurants-list');
+            list.innerHTML = '';
+
+            filteredRestaurants.forEach(restaurant => {
+                const div = document.createElement('div');
+                div.className = 'p-3 hover:bg-gray-50 cursor-pointer transition';
+                div.onclick = () => {
+                    focusOnRestaurant(restaurant);
+                };
+
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <div class="font-medium text-gray-900 text-sm">${restaurant.Name}</div>
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${getRatingColor(restaurant.mScore)}">
+                            ${restaurant.mScore}
+                        </span>
+                    </div>
+                    <div class="text-xs text-gray-600">${restaurant.Location}, ${restaurant.Country}</div>
+                    <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • ${restaurant.Price}</div>
+                `;
+
+                list.appendChild(div);
+            });
+
+            // Update map to show only filtered restaurants
+            updateMapMarkers(filteredRestaurants);
+        }
+
+        function focusOnRestaurant(restaurant) {
+            const lat = parseFloat(restaurant.Lat);
+            const lon = parseFloat(restaurant.Lon);
+
+            if (lat && lon && map) {
+                // Set flag to prevent auto-recentering
+                userSelectedRestaurant = true;
+
+                // First, close any open popups
+                map.closePopup();
+
+                // Force an immediate, non-animated pan first to ensure we move
+                map.panTo([lat, lon], { animate: false });
+
+                // Then set view with proper zoom
+                setTimeout(() => {
+                    map.setView([lat, lon], 12, {
+                        animate: true,
+                        duration: 0.5
+                    });
+
+                    // Open the marker popup if it exists
+                    const markerId = `${restaurant.Name}-${lat}-${lon}`;
+                    if (markers[markerId]) {
+                        setTimeout(() => {
+                            markers[markerId].openPopup();
+                        }, 600);
+                    }
+                }, 10);
+            }
+        }
+
+        function updateMapMarkers(filteredRestaurants) {
+            if (!map || !markerLayer) return;
+
+            // Clear existing markers
+            markerLayer.clearLayers();
+            markers = {};
+
+            const bounds = [];
+
+            // Add markers for filtered restaurants
+            filteredRestaurants.forEach(restaurant => {
+                const lat = parseFloat(restaurant.Lat);
+                const lon = parseFloat(restaurant.Lon);
+
+                if (!isNaN(lat) && !isNaN(lon) && lat !== 0 && lon !== 0) {
+                    const rating = parseFloat(restaurant.mScore);
+                    const roundedRating = Math.round(rating);
+                    let color = '#6b7280'; // gray
+                    if (rating >= 8) color = '#ef4444'; // red
+                    else if (rating >= 7) color = '#f97316'; // orange
+                    else if (rating >= 6) color = '#eab308'; // yellow
+
+                    const icon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 50%;
+                            background-color: ${color};
+                            border: 3px solid #fff;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: bold;
+                            font-size: 14px;
+                            color: #fff;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                            cursor: pointer;
+                        ">${roundedRating}</div>`,
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16]
+                    });
+
+                    const marker = L.marker([lat, lon], {
+                        icon: icon,
+                        zIndexOffset: Math.round(rating * 100) // Higher scores get higher z-index
+                    }).addTo(markerLayer);
+
+                    const attributes = [
+                        { name: 'Crust', value: restaurant.Crust },
+                        { name: 'Dough', value: restaurant.Dough },
+                        { name: 'Sauce', value: restaurant.Sauce },
+                        { name: 'Cheese', value: restaurant.Cheese },
+                        { name: 'Basil', value: restaurant.Basil },
+                        { name: 'Sliced', value: restaurant.Sliced },
+                        { name: 'Sloppiness', value: restaurant.Sloppiness },
+                        { name: 'Saltiness', value: restaurant.Saltiness },
+                        { name: 'Oiliness', value: restaurant.Oiliness }
+                    ];
+
+                    marker.bindPopup(`
+                        <div style="min-width: 200px; font-family: system-ui, -apple-system, sans-serif;">
+                            <div style="font-size: 16px; font-weight: bold; color: #111827; margin-bottom: 8px;">${restaurant.Name}</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <div>
+                                    <div style="font-size: 11px; color: #6b7280;">Overall Rating</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #111827;">${restaurant.mScore}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 11px; color: #6b7280;">Price</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #111827;">${restaurant.Price}</div>
+                                </div>
+                                <div style="grid-column: span 2;">
+                                    <div style="font-size: 11px; color: #6b7280;">Location</div>
+                                    <div style="font-size: 13px; font-weight: 500; color: #111827;">${restaurant.Location}, ${restaurant.Country}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `, { maxWidth: 250 });
+
+                    // Open detail view when popup is opened
+                    marker.on('popupopen', () => {
+                        showDetailInSidebar(restaurant);
+                    });
+
+                    // Store marker reference
+                    const markerId = `${restaurant.Name}-${lat}-${lon}`;
+                    markers[markerId] = marker;
+
+                    bounds.push([lat, lon]);
+                }
+            });
+
+            // Fit map to show all filtered markers (only if user hasn't manually selected)
+            if (!userSelectedRestaurant && bounds.length > 0) {
+                if (bounds.length === 1) {
+                    map.setView(bounds[0], 12);
+                } else {
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            }
+        }
+
+        function showDetailInSidebar(restaurant) {
+            const detailSection = document.getElementById('detail-section');
+            const detailName = document.getElementById('detail-name');
+            const detailRating = document.getElementById('detail-rating');
+            const detailPrice = document.getElementById('detail-price');
+            const detailDate = document.getElementById('detail-date');
+            const detailRatings = document.getElementById('detail-ratings');
+
+            detailName.textContent = restaurant.Name;
+            detailRating.textContent = restaurant.mScore;
+            detailPrice.textContent = restaurant.Price;
+            detailDate.textContent = restaurant.Date;
+
+            const attributes = [
+                { name: 'Crust', value: restaurant.Crust },
+                { name: 'Dough', value: restaurant.Dough },
+                { name: 'Sauce', value: restaurant.Sauce },
+                { name: 'Cheese', value: restaurant.Cheese },
+                { name: 'Basil', value: restaurant.Basil },
+                { name: 'Sliced', value: restaurant.Sliced },
+                { name: 'Sloppiness', value: restaurant.Sloppiness },
+                { name: 'Saltiness', value: restaurant.Saltiness },
+                { name: 'Oiliness', value: restaurant.Oiliness }
+            ];
+
+            detailRatings.innerHTML = attributes.map(attr => {
+                const value = parseInt(attr.value);
+                const percentage = (value / 10) * 100;
+                return `
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-gray-700">${attr.name}</span>
+                            <span class="font-medium text-gray-700">${attr.value}/10</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            detailSection.classList.remove('hidden');
+        }
+
+        function showDetail(restaurant) {
+            const modal = document.getElementById('detail-modal');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+
+            title.textContent = restaurant.Name;
+
+            const attributes = [
+                { name: 'Crust', value: restaurant.Crust },
+                { name: 'Dough', value: restaurant.Dough },
+                { name: 'Sauce', value: restaurant.Sauce },
+                { name: 'Cheese', value: restaurant.Cheese },
+                { name: 'Basil', value: restaurant.Basil },
+                { name: 'Sliced', value: restaurant.Sliced },
+                { name: 'Sloppiness', value: restaurant.Sloppiness },
+                { name: 'Saltiness', value: restaurant.Saltiness },
+                { name: 'Oiliness', value: restaurant.Oiliness }
+            ];
+
+            content.innerHTML = `
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <p class="text-sm text-gray-500">Overall Rating</p>
+                        <p class="text-2xl font-bold text-gray-900">${restaurant.mScore}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Price</p>
+                        <p class="text-2xl font-bold text-gray-900">${restaurant.Price}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Location</p>
+                        <p class="text-lg font-medium text-gray-900">${restaurant.Location}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Country</p>
+                        <p class="text-lg font-medium text-gray-900">${restaurant.Country}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Date Visited</p>
+                        <p class="text-lg font-medium text-gray-900">${restaurant.Date}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Detailed Ratings</h3>
+                    <div class="space-y-3">
+                        ${attributes.map(attr => {
+                const value = parseInt(attr.value);
+                const percentage = (value / 10) * 100;
+                return `
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">${attr.name}</span>
+                                        <span class="text-sm font-medium text-gray-700">${attr.value}/10</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${percentage}%"></div>
+                                    </div>
+                                </div>
+                            `;
+            }).join('')}
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        function filterAndSort() {
+            const countryFilter = document.getElementById('country-filter').value;
+            const sortBy = document.getElementById('sort-by').value;
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const ratingMin = parseFloat(document.getElementById('rating-min').value);
+
+            let filtered = restaurants;
+
+            // Filter by search term
+            if (searchTerm) {
+                filtered = filtered.filter(r =>
+                    r.Name.toLowerCase().includes(searchTerm) ||
+                    r.Location.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Filter by minimum rating
+            if (ratingMin > 0) {
+                filtered = filtered.filter(r => {
+                    const rating = parseFloat(r.mScore);
+                    return rating >= ratingMin;
+                });
+            }
+            // Filter by country
+            if (countryFilter) {
+                filtered = filtered.filter(r => r.Country === countryFilter);
+            }
+
+            // Sort
+            filtered = [...filtered].sort((a, b) => {
+                switch (sortBy) {
+                    case 'rating-desc':
+                        return parseFloat(b.mScore) - parseFloat(a.mScore);
+                    case 'rating-asc':
+                        return parseFloat(a.mScore) - parseFloat(b.mScore);
+                    case 'date-desc':
+                        return parseDate(b.Date) - parseDate(a.Date);
+                    case 'date-asc':
+                        return parseDate(a.Date) - parseDate(b.Date);
+                    case 'price-desc':
+                        return parsePrice(b.Price) - parsePrice(a.Price);
+                    case 'price-asc':
+                        return parsePrice(a.Price) - parsePrice(b.Price);
+                    default:
+                        return 0;
+                }
+            });
+
+            renderRestaurants(filtered);
+            updateMapMarkers(filtered);
+        }
+
+        function updateRatingDisplay() {
+            const minSlider = document.getElementById('rating-min');
+            const display = document.getElementById('rating-display');
+
+            const minVal = parseFloat(minSlider.value);
+            display.textContent = `${minVal}+`;
+            filterAndSort();
+        }
+
+        async function initMap() {
+            map = L.map('map').setView([45, 10], 4);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap contributors, © CARTO',
+                maxZoom: 19,
+                subdomains: 'abcd'
+            }).addTo(map);
+
+            // Create a layer group for markers
+            markerLayer = L.layerGroup().addTo(map);
+
+            // Initial markers will be added by filterAndSort
+        }
+
+        // Initialize
+        async function init() {
+            restaurants = await loadCSV();
+            await initMap();
+            updateStats();
+            filterAndSort();
+        }
+
+        init();
+
+        // Event listeners
+        document.getElementById('search-input').addEventListener('input', filterAndSort);
+        document.getElementById('country-filter').addEventListener('change', filterAndSort);
+        document.getElementById('sort-by').addEventListener('change', filterAndSort);
+        document.getElementById('rating-min').addEventListener('input', updateRatingDisplay);
+        document.getElementById('close-detail').addEventListener('click', () => {
+            document.getElementById('detail-section').classList.add('hidden');
+        });
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('detail-modal').classList.add('hidden');
+        });
+        document.getElementById('detail-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'detail-modal') {
+                document.getElementById('detail-modal').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
