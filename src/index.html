@@ -438,7 +438,6 @@
 
                 if (!isNaN(lat) && !isNaN(lon) && lat !== 0 && lon !== 0) {
                     const rating = parseFloat(restaurant.mScore);
-                    const roundedRating = Math.round(rating);
                     let color = '#6b7280'; // gray
                     if (rating >= 8) color = '#ef4444'; // red
                     else if (rating >= 7) color = '#f97316'; // orange
@@ -456,11 +455,11 @@
                             align-items: center;
                             justify-content: center;
                             font-weight: bold;
-                            font-size: 14px;
+                            font-size: 11px;
                             color: #fff;
                             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
                             cursor: pointer;
-                        ">${roundedRating}</div>`,
+                        ">${rating}</div>`,
                         iconSize: [32, 32],
                         iconAnchor: [16, 16]
                     });
