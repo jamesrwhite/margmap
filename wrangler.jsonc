@@ -1,7 +1,19 @@
 {
     "name": "margmap",
     "compatibility_date": "2024-01-01",
+    "workers_dev": false,
+    "preview_urls": true,
     "assets": {
         "directory": "src"
-    }
+    },
+    "routes": [
+        {
+            "pattern": "margmap.com",
+            "custom_domain": true
+        },
+        {
+            "pattern": "www.margmap.com",
+            "custom_domain": true
+        }
+    ]
 }
