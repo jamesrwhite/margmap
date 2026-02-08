@@ -248,7 +248,13 @@ function updateMapMarkers(filteredRestaurants) {
                         </div>
                         <div class="popup-location-full">
                             <div class="popup-location-label">Location</div>
-                            <div class="popup-location-value">${restaurant.Location}, ${restaurant.Country}</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.Name + ' ' + restaurant.Location + ' ' + restaurant.Country)}" target="_blank" rel="noopener noreferrer" class="popup-location-value" style="color: #2563eb; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                <svg style="width: 14px; height: 14px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span>${restaurant.Location}, ${restaurant.Country}</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -283,13 +289,13 @@ function updateMapMarkers(filteredRestaurants) {
 function showDetailInSidebar(restaurant) {
     const ratingsHtml = generateRatingsHtml(getRestaurantAttributes(restaurant));
     const location = `${restaurant.Location}, ${restaurant.Country}`;
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.Name + ' ' + restaurant.Location + ' ' + restaurant.Country)}`;
 
     // Update both desktop and mobile views
     const updates = [
         ['sidebar-detail-name', 'mobile-detail-name', restaurant.Name],
         ['sidebar-detail-rating', 'mobile-detail-rating', restaurant.mScore],
         ['sidebar-detail-price', 'mobile-detail-price', restaurant.Price],
-        ['sidebar-detail-location', 'mobile-detail-location', location],
         ['sidebar-detail-date', 'mobile-detail-date', restaurant.Date]
     ];
 
@@ -297,6 +303,15 @@ function showDetailInSidebar(restaurant) {
         document.getElementById(desktopId).textContent = value;
         document.getElementById(mobileId).textContent = value;
     });
+
+    // Update location links
+    const desktopLocationLink = document.getElementById('sidebar-detail-location');
+    desktopLocationLink.href = googleMapsUrl;
+    desktopLocationLink.querySelector('span').textContent = location;
+
+    const mobileLocationLink = document.getElementById('mobile-detail-location');
+    mobileLocationLink.href = googleMapsUrl;
+    mobileLocationLink.querySelector('span').textContent = location;
 
     document.getElementById('sidebar-detail-ratings').innerHTML = ratingsHtml;
     document.getElementById('mobile-detail-ratings').innerHTML = ratingsHtml;
