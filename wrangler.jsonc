@@ -4,7 +4,7 @@
     "workers_dev": false,
     "preview_urls": true,
     "assets": {
-        "directory": "src"
+        "directory": "dist"
     },
     "routes": [
         {
