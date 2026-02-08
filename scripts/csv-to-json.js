@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Convert CSV file to JSON array of objects
@@ -72,29 +76,27 @@ function parseCSVLine(line) {
 }
 
 // Main execution
-if (require.main === module) {
-    const args = process.argv.slice(2);
+const args = process.argv.slice(2);
 
-    if (args.length !== 2) {
-        console.error('Usage: node csv-to-json.js input.csv output.json');
-        process.exit(1);
-    }
-
-    const [inputFile, outputFile] = args;
-
-    // Ensure input file exists
-    if (!fs.existsSync(inputFile)) {
-        console.error(`❌ Input file not found: ${inputFile}`);
-        process.exit(1);
-    }
-
-    // Ensure output directory exists
-    const outputDir = path.dirname(outputFile);
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    csvToJson(inputFile, outputFile);
+if (args.length !== 2) {
+    console.error('Usage: node csv-to-json.js input.csv output.json');
+    process.exit(1);
 }
 
-module.exports = { csvToJson };
+const [inputFile, outputFile] = args;
+
+// Ensure input file exists
+if (!fs.existsSync(inputFile)) {
+    console.error(`❌ Input file not found: ${inputFile}`);
+    process.exit(1);
+}
+
+// Ensure output directory exists
+const outputDir = path.dirname(outputFile);
+if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+}
+
+csvToJson(inputFile, outputFile);
+
+export { csvToJson };

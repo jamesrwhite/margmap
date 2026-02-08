@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MargMap</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍕</text></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="/main.js"></script>
     <style>
         body,
         html {
@@ -191,7 +189,7 @@
         </div>
 
         <!-- Detail View (Full Sidebar) -->
-        <div id="sidebar-detail-view" class="hidden flex flex-col h-full">
+        <div id="sidebar-detail-view" class="hidden h-full flex-col">
             <!-- Header with close button -->
             <div class="p-4 border-b border-gray-200 flex justify-between items-center flex-shrink-0">
                 <h2 class="text-xl font-bold text-gray-900" id="sidebar-detail-name"></h2>

@@ -11,11 +11,32 @@ A web application for visualizing and rating pizza places on an interactive map.
 │   └── csv-to-json.js    # Convert CSV data to JSON format
 ├── src/                  # Web application source
 │   ├── index.html        # Main application file
+│   ├── main.js           # JavaScript entry point
+│   ├── styles.css        # Tailwind CSS entry point
 │   └── data/            # Data directory
 │       ├── ratings.csv   # CSV data fetched from Google Sheets
 │       └── ratings.json  # Processed JSON data for the app
+├── dist/                 # Production build output (generated)
+├── vite.config.js        # Vite build configuration
+├── tailwind.config.js    # Tailwind CSS configuration
+├── postcss.config.js     # PostCSS configuration
 └── mise.toml            # Development environment config
 ```
+
+## Build System
+
+The application uses [Vite](https://vitejs.dev/) for optimal bundling and performance:
+
+- **Tailwind CSS**: Purged and minified in production
+- **Leaflet**: Bundled as ES module
+- **Code Splitting**: Automatic chunk splitting for optimal loading
+- **Minification**: JavaScript and CSS minified in production builds
+- **Tree Shaking**: Unused code eliminated
+
+### Development vs Production
+
+- **Development**: Hot module replacement, fast refresh, source maps
+- **Production**: Minified bundles, optimized assets, CDN-ready
 
 ## Getting Started
 
@@ -53,16 +74,17 @@ A web application for visualizing and rating pizza places on an interactive map.
 
 5. **Access the application**
 
-   Open your browser to `http://localhost:8788`
+   Open your browser to `http://localhost:5173` (Vite default port)
 
 ### Available Scripts
 
-- `pnpm dev` - Start development server
-- `pnpm deploy` - Deploy to Cloudflare Workers Assets
-- `pnpm build` - Prepare data files
+- `pnpm dev` - Start Vite development server with hot reload
+- `pnpm build` - Build optimized production bundle (includes data preparation)
+- `pnpm preview` - Preview production build locally
+- `pnpm deploy` - Build and deploy to Cloudflare Pages
 - `pnpm fetch-data` - Fetch CSV from Google Sheets and convert to JSON
 - `pnpm prepare-data` - Convert existing CSV to JSON
-- `pnpm clean` - Remove generated data files
+- `pnpm clean` - Remove generated data files and build output
 
 ## Data Management
 
