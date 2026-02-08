@@ -27,16 +27,18 @@ A web application for visualizing and rating pizza places on an interactive map.
 
 The application uses [Vite](https://vitejs.dev/) for optimal bundling and performance:
 
-- **Tailwind CSS**: Purged and minified in production
+- **Tailwind CSS**: Purged and minified
 - **Leaflet**: Bundled as ES module
+- **HTML**: Minified with whitespace removal
 - **Code Splitting**: Automatic chunk splitting for optimal loading
-- **Minification**: JavaScript and CSS minified in production builds
+- **Minification**: JavaScript minified with esbuild
 - **Tree Shaking**: Unused code eliminated
 
-### Development vs Production
+### Commands
 
-- **Development**: Hot module replacement, fast refresh, source maps
-- **Production**: Minified bundles, optimized assets, CDN-ready
+- `pnpm dev` - Development server with hot reload and source maps (unminified)
+- `pnpm build` - Production build with full minification and optimization
+- `pnpm preview` - Serves the production build locally for testing (minified)
 
 ## Getting Started
 
