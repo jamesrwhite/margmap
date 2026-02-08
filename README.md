@@ -34,9 +34,9 @@ A web application for visualizing and rating pizza places on an interactive map.
 ├── scripts/              # Data processing scripts
 │   └── csv-to-json.js    # Convert CSV data to JSON format
 ├── src/                  # Web application source
-│   ├── index.html        # Main application file
-│   ├── main.js           # JavaScript entry point
-│   ├── styles.css        # Tailwind CSS entry point
+│   ├── index.html        # Main HTML file
+│   ├── main.js           # Application logic and Leaflet integration
+│   ├── styles.css        # Tailwind CSS and Leaflet styles
 │   └── data/            # Data directory
 │       ├── ratings.csv   # CSV data fetched from Google Sheets
 │       └── ratings.json  # Processed JSON data for the app
@@ -51,7 +51,9 @@ A web application for visualizing and rating pizza places on an interactive map.
 
 The application uses [Vite](https://vitejs.dev/) for optimal bundling and performance:
 
-- **Tailwind CSS**: Purged and minified
+- **CSS**: Styles imported via `<link>` tag in HTML, processed by PostCSS/Tailwind
+- **Leaflet CSS**: Imported from node_modules via CSS `@import` in styles.css
+- **Tailwind CSS**: Purged and minified in production
 - **Leaflet**: Bundled as ES module
 - **HTML**: Minified with whitespace removal
 - **Code Splitting**: Automatic chunk splitting for optimal loading
