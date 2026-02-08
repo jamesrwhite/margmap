@@ -1,3 +1,100 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Base layout styles */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#map {
+    width: 100%;
+    height: calc(100vh - 60px);
+    position: fixed;
+    top: 60px;
+    left: 0;
+    z-index: 1;
+    background-color: #d6e8eb;
+    transition: height 0.3s ease;
+}
+
+#map.mobile-detail-open {
+    height: 50vh;
+}
+
+@media (min-width: 1024px) {
+    #map {
+        right: 384px;
+        width: auto;
+        height: calc(100vh - 60px);
+    }
+
+    #map.mobile-detail-open {
+        height: calc(100vh - 60px);
+    }
+}
+
+/* Custom marker styles */
+.marker-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 11px;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+/* Popup styles */
+.popup-container {
+    min-width: 200px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.popup-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.popup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.popup-label {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.popup-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #111827;
+}
+
+.popup-location-label {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.popup-location-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #111827;
+}
+
+.popup-location-full {
+    grid-column: span 2;
+}
