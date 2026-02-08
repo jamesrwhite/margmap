@@ -278,62 +278,47 @@
             </div>
         </div>
     </div>
-    </div>
-    </div>
-    </div>
-    </section>
-
-    <!-- Restaurants List -->
-    <section class="bg-white rounded-lg shadow overflow-hidden flex-1 flex flex-col min-h-0">
-        <div class="overflow-y-auto flex-1">
-            <div id="restaurants-list" class="divide-y divide-gray-200">
-                <!-- Populated by JavaScript -->
-            </div>
-        </div>
-    </section>
-    </div>
-    </aside>
-
-    <!-- Detailed View Modal -->
-    <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style="z-index: 2000;">
-        <article class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <h2 id="modal-title" class="text-2xl font-bold text-gray-900"></h2>
-                    <button id="close-modal" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div id="modal-content" class="space-y-4">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
-        </article>
-    </div>
 
     <script>
         let restaurants = [];
         let map;
         let markers = {};
         let markerLayer;
-        let userSelectedRestaurant = false; // Flag to track manual selection
+        let userSelectedRestaurant = false;
+
+        // Restaurant rating attributes
+        const RATING_ATTRIBUTES = ['Crust', 'Dough', 'Sauce', 'Cheese', 'Basil', 'Sliced', 'Sloppiness', 'Saltiness', 'Oiliness'];
+
+        function getRestaurantAttributes(restaurant) {
+            return RATING_ATTRIBUTES.map(name => ({ name, value: restaurant[name] }));
+        }
+
+        function generateRatingsHtml(attributes) {
+            return attributes.map(attr => {
+                const value = parseInt(attr.value);
+                const percentage = (value / 10) * 100;
+                return `
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">${attr.name}</span>
+                            <span class="text-sm font-medium text-gray-700">${attr.value}/10</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
         // Mobile menu toggle
-        document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileFilters = document.getElementById('mobile-filters');
-            mobileMenu.classList.remove('hidden');
-            mobileFilters.classList.remove('translate-x-full');
-        });
+        function toggleMobileMenu(show) {
+            document.getElementById('mobile-menu').classList.toggle('hidden', !show);
+            document.getElementById('mobile-filters').classList.toggle('translate-x-full', !show);
+        }
 
-        document.getElementById('close-mobile-menu').addEventListener('click', () => {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileFilters = document.getElementById('mobile-filters');
-            mobileMenu.classList.add('hidden');
-            mobileFilters.classList.add('translate-x-full');
-        });
+        document.getElementById('mobile-menu-toggle').addEventListener('click', () => toggleMobileMenu(true));
+        document.getElementById('close-mobile-menu').addEventListener('click', () => toggleMobileMenu(false));
 
         // Sync mobile and desktop filter inputs
         function syncFilters(sourceId, targetId) {
@@ -362,19 +347,17 @@
         });
 
         // Sync rating display
-        document.getElementById('rating-min').addEventListener('input', () => {
-            const val = document.getElementById('rating-min').value;
-            document.getElementById('rating-display').textContent = parseFloat(val).toFixed(1) + '+';
-            document.getElementById('rating-min-mobile').value = val;
-            document.getElementById('rating-display-mobile').textContent = parseFloat(val).toFixed(1) + '+';
-        });
-
-        document.getElementById('rating-min-mobile').addEventListener('input', () => {
-            const val = document.getElementById('rating-min-mobile').value;
-            document.getElementById('rating-display-mobile').textContent = parseFloat(val).toFixed(1) + '+';
+        function syncRatingDisplay(sourceId) {
+            const val = document.getElementById(sourceId).value;
+            const formattedVal = parseFloat(val).toFixed(1) + '+';
+            document.getElementById('rating-display').textContent = formattedVal;
+            document.getElementById('rating-display-mobile').textContent = formattedVal;
             document.getElementById('rating-min').value = val;
-            document.getElementById('rating-display').textContent = parseFloat(val).toFixed(1) + '+';
-        });
+            document.getElementById('rating-min-mobile').value = val;
+        }
+
+        document.getElementById('rating-min').addEventListener('input', () => syncRatingDisplay('rating-min'));
+        document.getElementById('rating-min-mobile').addEventListener('input', () => syncRatingDisplay('rating-min-mobile'));
 
         async function loadCSV() {
             try {
@@ -442,11 +425,7 @@
                     div.className = 'p-3 hover:bg-gray-50 cursor-pointer transition';
                     div.onclick = () => {
                         focusOnRestaurant(restaurant);
-                        // Close mobile menu when restaurant is clicked
-                        const mobileMenu = document.getElementById('mobile-menu');
-                        const mobileFilters = document.getElementById('mobile-filters');
-                        mobileMenu.classList.add('hidden');
-                        mobileFilters.classList.add('translate-x-full');
+                        toggleMobileMenu(false);
                     };
 
                     div.innerHTML = `
@@ -546,20 +525,8 @@
 
                     const marker = L.marker([lat, lon], {
                         icon: icon,
-                        zIndexOffset: Math.round(rating * 100) // Higher scores get higher z-index
+                        zIndexOffset: Math.round(rating * 100)
                     }).addTo(markerLayer);
-
-                    const attributes = [
-                        { name: 'Crust', value: restaurant.Crust },
-                        { name: 'Dough', value: restaurant.Dough },
-                        { name: 'Sauce', value: restaurant.Sauce },
-                        { name: 'Cheese', value: restaurant.Cheese },
-                        { name: 'Basil', value: restaurant.Basil },
-                        { name: 'Sliced', value: restaurant.Sliced },
-                        { name: 'Sloppiness', value: restaurant.Sloppiness },
-                        { name: 'Saltiness', value: restaurant.Saltiness },
-                        { name: 'Oiliness', value: restaurant.Oiliness }
-                    ];
 
                     marker.bindPopup(`
                         <div style="min-width: 200px; font-family: system-ui, -apple-system, sans-serif;">
@@ -608,168 +575,39 @@
         }
 
         function showDetailInSidebar(restaurant) {
-            // Desktop: Show detail view in full sidebar
-            const sidebarMainContent = document.getElementById('sidebar-main-content');
-            const sidebarDetailView = document.getElementById('sidebar-detail-view');
-            const sidebarDetailName = document.getElementById('sidebar-detail-name');
-            const sidebarDetailRating = document.getElementById('sidebar-detail-rating');
-            const sidebarDetailPrice = document.getElementById('sidebar-detail-price');
-            const sidebarDetailLocation = document.getElementById('sidebar-detail-location');
-            const sidebarDetailDate = document.getElementById('sidebar-detail-date');
-            const sidebarDetailRatings = document.getElementById('sidebar-detail-ratings');
+            const ratingsHtml = generateRatingsHtml(getRestaurantAttributes(restaurant));
+            const location = `${restaurant.Location}, ${restaurant.Country}`;
 
-            // Mobile: Show detail view below map
-            const mobileDetailView = document.getElementById('mobile-detail-view');
-            const mobileDetailName = document.getElementById('mobile-detail-name');
-            const mobileDetailRating = document.getElementById('mobile-detail-rating');
-            const mobileDetailPrice = document.getElementById('mobile-detail-price');
-            const mobileDetailLocation = document.getElementById('mobile-detail-location');
-            const mobileDetailDate = document.getElementById('mobile-detail-date');
-            const mobileDetailRatings = document.getElementById('mobile-detail-ratings');
-
-            const attributes = [
-                { name: 'Crust', value: restaurant.Crust },
-                { name: 'Dough', value: restaurant.Dough },
-                { name: 'Sauce', value: restaurant.Sauce },
-                { name: 'Cheese', value: restaurant.Cheese },
-                { name: 'Basil', value: restaurant.Basil },
-                { name: 'Sliced', value: restaurant.Sliced },
-                { name: 'Sloppiness', value: restaurant.Sloppiness },
-                { name: 'Saltiness', value: restaurant.Saltiness },
-                { name: 'Oiliness', value: restaurant.Oiliness }
+            // Update both desktop and mobile views
+            const updates = [
+                ['sidebar-detail-name', 'mobile-detail-name', restaurant.Name],
+                ['sidebar-detail-rating', 'mobile-detail-rating', restaurant.mScore],
+                ['sidebar-detail-price', 'mobile-detail-price', restaurant.Price],
+                ['sidebar-detail-location', 'mobile-detail-location', location],
+                ['sidebar-detail-date', 'mobile-detail-date', restaurant.Date]
             ];
 
-            const ratingsHtml = attributes.map(attr => {
-                const value = parseInt(attr.value);
-                const percentage = (value / 10) * 100;
-                return `
-                    <div>
-                        <div class="flex justify-between mb-1">
-                            <span class="text-sm font-medium text-gray-700">${attr.name}</span>
-                            <span class="text-sm font-medium text-gray-700">${attr.value}/10</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            updates.forEach(([desktopId, mobileId, value]) => {
+                document.getElementById(desktopId).textContent = value;
+                document.getElementById(mobileId).textContent = value;
+            });
 
-            // Update desktop sidebar
-            sidebarDetailName.textContent = restaurant.Name;
-            sidebarDetailRating.textContent = restaurant.mScore;
-            sidebarDetailPrice.textContent = restaurant.Price;
-            sidebarDetailLocation.textContent = `${restaurant.Location}, ${restaurant.Country}`;
-            sidebarDetailDate.textContent = restaurant.Date;
-            sidebarDetailRatings.innerHTML = ratingsHtml;
+            document.getElementById('sidebar-detail-ratings').innerHTML = ratingsHtml;
+            document.getElementById('mobile-detail-ratings').innerHTML = ratingsHtml;
 
-            // Update mobile view
-            mobileDetailName.textContent = restaurant.Name;
-            mobileDetailRating.textContent = restaurant.mScore;
-            mobileDetailPrice.textContent = restaurant.Price;
-            mobileDetailLocation.textContent = `${restaurant.Location}, ${restaurant.Country}`;
-            mobileDetailDate.textContent = restaurant.Date;
-            mobileDetailRatings.innerHTML = ratingsHtml;
-
-            // Show/hide appropriate views
-            sidebarMainContent.classList.add('hidden');
-            sidebarDetailView.classList.remove('hidden');
-            mobileDetailView.classList.remove('hidden');
-
-            // Adjust map height on mobile when detail view is open
-            const mapElement = document.getElementById('map');
-            if (mapElement) {
-                mapElement.classList.add('mobile-detail-open');
-            }
+            // Toggle views
+            document.getElementById('sidebar-main-content').classList.add('hidden');
+            document.getElementById('sidebar-detail-view').classList.remove('hidden');
+            document.getElementById('mobile-detail-view').classList.remove('hidden');
+            document.getElementById('map').classList.add('mobile-detail-open');
         }
 
         function hideDetailViews() {
-            const sidebarMainContent = document.getElementById('sidebar-main-content');
-            const sidebarDetailView = document.getElementById('sidebar-detail-view');
-            const mobileDetailView = document.getElementById('mobile-detail-view');
-            const mapElement = document.getElementById('map');
-
-            sidebarMainContent.classList.remove('hidden');
-            sidebarDetailView.classList.add('hidden');
-            mobileDetailView.classList.add('hidden');
-
-            // Restore map to full height on mobile
-            if (mapElement) {
-                mapElement.classList.remove('mobile-detail-open');
-            }
-
-            // Close any open popups on the map
-            if (map) {
-                map.closePopup();
-            }
-        }
-
-        function showDetail(restaurant) {
-            const modal = document.getElementById('detail-modal');
-            const title = document.getElementById('modal-title');
-            const content = document.getElementById('modal-content');
-
-            title.textContent = restaurant.Name;
-
-            const attributes = [
-                { name: 'Crust', value: restaurant.Crust },
-                { name: 'Dough', value: restaurant.Dough },
-                { name: 'Sauce', value: restaurant.Sauce },
-                { name: 'Cheese', value: restaurant.Cheese },
-                { name: 'Basil', value: restaurant.Basil },
-                { name: 'Sliced', value: restaurant.Sliced },
-                { name: 'Sloppiness', value: restaurant.Sloppiness },
-                { name: 'Saltiness', value: restaurant.Saltiness },
-                { name: 'Oiliness', value: restaurant.Oiliness }
-            ];
-
-            content.innerHTML = `
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <p class="text-sm text-gray-500">Overall Rating</p>
-                        <p class="text-2xl font-bold text-gray-900">${restaurant.mScore}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Price</p>
-                        <p class="text-2xl font-bold text-gray-900">${restaurant.Price}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Location</p>
-                        <p class="text-lg font-medium text-gray-900">${restaurant.Location}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Country</p>
-                        <p class="text-lg font-medium text-gray-900">${restaurant.Country}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Date Visited</p>
-                        <p class="text-lg font-medium text-gray-900">${restaurant.Date}</p>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Detailed Ratings</h3>
-                    <div class="space-y-3">
-                        ${attributes.map(attr => {
-                const value = parseInt(attr.value);
-                const percentage = (value / 10) * 100;
-                return `
-                                <div>
-                                    <div class="flex justify-between mb-1">
-                                        <span class="text-sm font-medium text-gray-700">${attr.name}</span>
-                                        <span class="text-sm font-medium text-gray-700">${attr.value}/10</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${percentage}%"></div>
-                                    </div>
-                                </div>
-                            `;
-            }).join('')}
-                    </div>
-                </div>
-            `;
-
-            modal.classList.remove('hidden');
+            document.getElementById('sidebar-main-content').classList.remove('hidden');
+            document.getElementById('sidebar-detail-view').classList.add('hidden');
+            document.getElementById('mobile-detail-view').classList.add('hidden');
+            document.getElementById('map').classList.remove('mobile-detail-open');
+            if (map) map.closePopup();
         }
 
         function filterAndSort() {
@@ -824,14 +662,7 @@
             updateMapMarkers(filtered);
         }
 
-        function updateRatingDisplay() {
-            const minSlider = document.getElementById('rating-min');
-            const display = document.getElementById('rating-display');
 
-            const minVal = parseFloat(minSlider.value);
-            display.textContent = `${minVal}+`;
-            filterAndSort();
-        }
 
         async function initMap() {
             map = L.map('map', {
@@ -870,7 +701,10 @@
         document.getElementById('search-input').addEventListener('input', filterAndSort);
         document.getElementById('country-filter').addEventListener('change', filterAndSort);
         document.getElementById('sort-by').addEventListener('change', filterAndSort);
-        document.getElementById('rating-min').addEventListener('input', updateRatingDisplay);
+        document.getElementById('rating-min').addEventListener('input', () => {
+            syncRatingDisplay('rating-min');
+            filterAndSort();
+        });
 
         // Event listeners - Mobile
         document.getElementById('search-input-mobile').addEventListener('input', filterAndSort);
@@ -891,15 +725,6 @@
         // Close detail views
         document.getElementById('close-sidebar-detail').addEventListener('click', hideDetailViews);
         document.getElementById('close-mobile-detail').addEventListener('click', hideDetailViews);
-
-        document.getElementById('close-modal').addEventListener('click', () => {
-            document.getElementById('detail-modal').classList.add('hidden');
-        });
-        document.getElementById('detail-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'detail-modal') {
-                document.getElementById('detail-modal').classList.add('hidden');
-            }
-        });
     </script>
 </body>
 
