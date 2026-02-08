@@ -109,7 +109,7 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 - `pnpm dev` - Start Vite development server with hot reload
 - `pnpm build` - Build optimized production bundle (includes data preparation)
 - `pnpm preview` - Preview production build locally
-- `pnpm deploy` - Build and deploy to Cloudflare Pages
+- `pnpm ship` - Build and deploy to Cloudflare Pages
 - `pnpm fetch-data` - Fetch CSV from Google Sheets and convert to JSON
 - `pnpm prepare-data` - Convert existing CSV to JSON
 - `pnpm clean` - Remove generated data files and build output
@@ -152,7 +152,7 @@ This will trigger automatic deployment to Cloudflare Pages.
 The application is deployed manually to Cloudflare Workers Assets from a local machine via:
 
 ```sh
-pnpm wrangler deploy
+pnpm ship
 ```
 
 ## Technology Stack
