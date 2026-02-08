@@ -5,6 +5,12 @@ import ViteMinifyPlugin from 'vite-plugin-html-minifier';
 
 export default defineConfig({
     root: 'src',
+    server: {
+        port: 8080,
+    },
+    preview: {
+        port: 8080,
+    },
     build: {
         outDir: '../dist',
         emptyOutDir: true,
