@@ -22,7 +22,9 @@ const tableHeaders = '| Name | Rating | Location | Country | Date | Price | Crus
 const tableSeparator = '|------|--------|----------|---------|------|-------|-------|-------|-------|--------|-------|--------|------------|-----------|----------|';
 
 const tableRows = rows.map(row => {
-    return `| ${row.Name} | ${row.mScore} | ${row.Location} | ${row.Country} | ${row.Date} | ${row.Price} | ${row.Crust} | ${row.Dough} | ${row.Sauce} | ${row.Cheese} | ${row.Basil} | ${row.Sliced} | ${row.Sloppiness} | ${row.Saltiness} | ${row.Oiliness} |`;
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(row.Name + ' ' + row.Location + ' ' + row.Country)}`;
+    const nameLink = `[${row.Name}](${googleMapsUrl})`;
+    return `| ${nameLink} | ${row.mScore} | ${row.Location} | ${row.Country} | ${row.Date} | ${row.Price} | ${row.Crust} | ${row.Dough} | ${row.Sauce} | ${row.Cheese} | ${row.Basil} | ${row.Sliced} | ${row.Sloppiness} | ${row.Saltiness} | ${row.Oiliness} |`;
 }).join('\n');
 
 const markdownTable = `${tableHeaders}\n${tableSeparator}\n${tableRows}`;

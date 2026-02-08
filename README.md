@@ -6,25 +6,25 @@ A web application for visualizing and rating pizza places on an interactive map.
 
 | Name | Rating | Location | Country | Date | Price | Crust | Dough | Sauce | Cheese | Basil | Sliced | Sloppiness | Saltiness | Oiliness |
 |------|--------|----------|---------|------|-------|-------|-------|-------|--------|-------|--------|------------|-----------|----------|
-| Monellis | 8.5 | Hastings | England | 19/10/2024 | £13.50 | 9 | 9 | 9 | 9 | 5 | 5 | 8 | 8 | 9 |
-| Slice of Life | 8.3 | Busan | South Korea | 10/10/2025 | £11.14 | 7 | 8 | 8 | 9 | 10 | 10 | 9 | 8 | 9 |
-| Pizzarelli | 8 | St Leonards-on-Sea | England | 22/08/2025 | £11.99 | 8 | 7 | 8 | 9 | 5 | 10 | 9 | 8 | 9 |
-| Le Bellini | 8 | Toulouse | France | 23/09/2024 | £10.80 | 9 | 8 | 8 | 8 | 5 | 5 | 9 | 8 | 8 |
-| La Pizza | 7.6 | València | Spain | 30/08/2025 | £10.82 | 8 | 7 | 8 | 7 | 10 | 0 | 8 | 8 | 8 |
-| Brewing Brothers | 7.4 | Hastings | England | 25/04/2025 | £9.50 | 8 | 7 | 9 | 7 | 0 | 10 | 7 | 8 | 7 |
-| The Crust | 7.3 | Bude | England | 13/08/2024 | £12.00 | 8 | 8 | 7 | 7 | 5 | 5 | 7 | 8 | 7 |
-| Rustico | 7.2 | Hastings | England | 03/05/2025 | £9.50 | 8 | 7 | 8 | 6 | 5 | 5 | 7 | 8 | 8 |
-| Dough Ray Me | 7 | St Leonards-on-Sea | England | 17/07/2025 | £11.00 | 7 | 7 | 8 | 6 | 5 | 5 | 7 | 8 | 7 |
-| Homeslice | 6.9 | City of London | England | 02/02/2026 | £14.00 | 7 | 7 | 8 | 7 | 5 | 5 | 6 | 7 | 6 |
-| Tredici | 6.7 | Cannes | France | 09/08/2025 | £14.00 | 7 | 6 | 8 | 6 | 5 | 0 | 7 | 8 | 7 |
-| Magpie | 6.6 | Seoul | South Korea | 07/10/2025 | £12.14 | 6 | 6 | 7 | 7 | 5 | 10 | 7 | 7 | 6 |
-| La Saporita | 6.4 | St Leonards-on-Sea | England | 31/10/2025 | £9.95 | 6 | 6 | 7 | 7 | 0 | 10 | 7 | 7 | 7 |
-| The Rising Sun | 6.2 | Chelmsford | England | 01/02/2026 | £10.00 | 7 | 6 | 7 | 6 | 0 | 10 | 6 | 7 | 7 |
-| Bellisimo | 5.8 | Corfu | Greece | 26/10/2024 | £8.33 | 5 | 6 | 6 | 6 | 0 | 5 | 7 | 8 | 7 |
-| Marina Fountain | 5.8 | St Leonards-on-Sea | England | 16/10/2024 | £9.50 | 5 | 5 | 6 | 5 | 5 | 10 | 7 | 7 | 7 |
-| The Boat House | 5.8 | Christchurch | England | 19/04/2025 | £14.00 | 5 | 6 | 7 | 6 | 0 | 10 | 5 | 6 | 6 |
-| Wetherspoons | 5.5 | Gatwick | England | 19/09/2024 | £13.25 | 6 | 6 | 6 | 6 | 0 | 0 | 7 | 5 | 6 |
-| Casa de Pier | 5.4 | St Leonards-on-Sea | England | 16/05/2025 | £10.00 | 5 | 5 | 6 | 5 | 0 | 10 | 6 | 6 | 7 |
+| [Monellis](https://www.google.com/maps/search/?api=1&query=Monellis%20Hastings%20England) | 8.5 | Hastings | England | 19/10/2024 | £13.50 | 9 | 9 | 9 | 9 | 5 | 5 | 8 | 8 | 9 |
+| [Slice of Life](https://www.google.com/maps/search/?api=1&query=Slice%20of%20Life%20Busan%20South%20Korea) | 8.3 | Busan | South Korea | 10/10/2025 | £11.14 | 7 | 8 | 8 | 9 | 10 | 10 | 9 | 8 | 9 |
+| [Pizzarelli](https://www.google.com/maps/search/?api=1&query=Pizzarelli%20St%20Leonards-on-Sea%20England) | 8 | St Leonards-on-Sea | England | 22/08/2025 | £11.99 | 8 | 7 | 8 | 9 | 5 | 10 | 9 | 8 | 9 |
+| [Le Bellini](https://www.google.com/maps/search/?api=1&query=Le%20Bellini%20Toulouse%20France) | 8 | Toulouse | France | 23/09/2024 | £10.80 | 9 | 8 | 8 | 8 | 5 | 5 | 9 | 8 | 8 |
+| [La Pizza](https://www.google.com/maps/search/?api=1&query=La%20Pizza%20Val%C3%A8ncia%20Spain) | 7.6 | València | Spain | 30/08/2025 | £10.82 | 8 | 7 | 8 | 7 | 10 | 0 | 8 | 8 | 8 |
+| [Brewing Brothers](https://www.google.com/maps/search/?api=1&query=Brewing%20Brothers%20Hastings%20England) | 7.4 | Hastings | England | 25/04/2025 | £9.50 | 8 | 7 | 9 | 7 | 0 | 10 | 7 | 8 | 7 |
+| [The Crust](https://www.google.com/maps/search/?api=1&query=The%20Crust%20Bude%20England) | 7.3 | Bude | England | 13/08/2024 | £12.00 | 8 | 8 | 7 | 7 | 5 | 5 | 7 | 8 | 7 |
+| [Rustico](https://www.google.com/maps/search/?api=1&query=Rustico%20Hastings%20England) | 7.2 | Hastings | England | 03/05/2025 | £9.50 | 8 | 7 | 8 | 6 | 5 | 5 | 7 | 8 | 8 |
+| [Dough Ray Me](https://www.google.com/maps/search/?api=1&query=Dough%20Ray%20Me%20St%20Leonards-on-Sea%20England) | 7 | St Leonards-on-Sea | England | 17/07/2025 | £11.00 | 7 | 7 | 8 | 6 | 5 | 5 | 7 | 8 | 7 |
+| [Homeslice](https://www.google.com/maps/search/?api=1&query=Homeslice%20City%20of%20London%20England) | 6.9 | City of London | England | 02/02/2026 | £14.00 | 7 | 7 | 8 | 7 | 5 | 5 | 6 | 7 | 6 |
+| [Tredici](https://www.google.com/maps/search/?api=1&query=Tredici%20Cannes%20France) | 6.7 | Cannes | France | 09/08/2025 | £14.00 | 7 | 6 | 8 | 6 | 5 | 0 | 7 | 8 | 7 |
+| [Magpie](https://www.google.com/maps/search/?api=1&query=Magpie%20Seoul%20South%20Korea) | 6.6 | Seoul | South Korea | 07/10/2025 | £12.14 | 6 | 6 | 7 | 7 | 5 | 10 | 7 | 7 | 6 |
+| [La Saporita](https://www.google.com/maps/search/?api=1&query=La%20Saporita%20St%20Leonards-on-Sea%20England) | 6.4 | St Leonards-on-Sea | England | 31/10/2025 | £9.95 | 6 | 6 | 7 | 7 | 0 | 10 | 7 | 7 | 7 |
+| [The Rising Sun](https://www.google.com/maps/search/?api=1&query=The%20Rising%20Sun%20Chelmsford%20England) | 6.2 | Chelmsford | England | 01/02/2026 | £10.00 | 7 | 6 | 7 | 6 | 0 | 10 | 6 | 7 | 7 |
+| [Bellisimo](https://www.google.com/maps/search/?api=1&query=Bellisimo%20Corfu%20Greece) | 5.8 | Corfu | Greece | 26/10/2024 | £8.33 | 5 | 6 | 6 | 6 | 0 | 5 | 7 | 8 | 7 |
+| [Marina Fountain](https://www.google.com/maps/search/?api=1&query=Marina%20Fountain%20St%20Leonards-on-Sea%20England) | 5.8 | St Leonards-on-Sea | England | 16/10/2024 | £9.50 | 5 | 5 | 6 | 5 | 5 | 10 | 7 | 7 | 7 |
+| [The Boat House](https://www.google.com/maps/search/?api=1&query=The%20Boat%20House%20Christchurch%20England) | 5.8 | Christchurch | England | 19/04/2025 | £14.00 | 5 | 6 | 7 | 6 | 0 | 10 | 5 | 6 | 6 |
+| [Wetherspoons](https://www.google.com/maps/search/?api=1&query=Wetherspoons%20Gatwick%20England) | 5.5 | Gatwick | England | 19/09/2024 | £13.25 | 6 | 6 | 6 | 6 | 0 | 0 | 7 | 5 | 6 |
+| [Casa de Pier](https://www.google.com/maps/search/?api=1&query=Casa%20de%20Pier%20St%20Leonards-on-Sea%20England) | 5.4 | St Leonards-on-Sea | England | 16/05/2025 | £10.00 | 5 | 5 | 6 | 5 | 0 | 10 | 6 | 6 | 7 |
 
 ## Project Structure
 
