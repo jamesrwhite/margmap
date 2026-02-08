@@ -26,12 +26,21 @@
             left: 0;
             z-index: 1;
             background-color: #d6e8eb;
+            transition: height 0.3s ease;
+        }
+
+        #map.mobile-detail-open {
+            height: 50vh;
         }
 
         @media (min-width: 1024px) {
             #map {
                 right: 384px;
                 width: auto;
+                height: calc(100vh - 60px);
+            }
+
+            #map.mobile-detail-open {
                 height: calc(100vh - 60px);
             }
         }
@@ -109,8 +118,10 @@
             </div>
         </div>
     </div>
+    <!-- Desktop Sidebar -->
     <aside class="fixed bottom-0 left-0 right-0 lg:top-[60px] lg:right-0 lg:left-auto lg:bottom-0 lg:w-96 lg:flex hidden bg-white/95 backdrop-blur shadow-xl max-h-[60vh] lg:max-h-[calc(100vh-60px)] flex-col" style="z-index: 1000;">
-        <div class="p-4 flex flex-col flex-1 overflow-hidden">
+        <!-- Main Content (Stats, Filters, List) -->
+        <div id="sidebar-main-content" class="p-4 flex flex-col flex-1 overflow-hidden">
             <!-- Stats Cards -->
             <section class="grid grid-cols-2 gap-2 mb-4 flex-shrink-0">
                 <article class="bg-white rounded-lg shadow p-3">
@@ -169,40 +180,6 @@
                 </div>
             </section>
 
-            <!-- Detailed View Section (Initially Hidden) -->
-            <section id="detail-section" class="bg-white rounded-lg shadow mb-4 flex-shrink-0 hidden overflow-hidden flex flex-col" style="max-height: 300px;">
-                <div class="flex justify-between items-start p-3 pb-2 flex-shrink-0">
-                    <h3 class="text-sm font-semibold text-gray-900" id="detail-name"></h3>
-                    <button id="close-detail" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="overflow-y-auto flex-1 px-3 pb-3">
-                    <div class="grid grid-cols-2 gap-2 mb-3 text-xs">
-                        <div>
-                            <div class="text-gray-500">Rating</div>
-                            <div class="font-bold text-gray-900" id="detail-rating"></div>
-                        </div>
-                        <div>
-                            <div class="text-gray-500">Price</div>
-                            <div class="font-bold text-gray-900" id="detail-price"></div>
-                        </div>
-                        <div class="col-span-2">
-                            <div class="text-gray-500">Date Visited</div>
-                            <div class="font-medium text-gray-900" id="detail-date"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="text-xs font-semibold text-gray-900 mb-2">Detailed Ratings</div>
-                        <div id="detail-ratings" class="space-y-2 text-xs">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- Restaurants List -->
             <section class="bg-white rounded-lg shadow overflow-hidden flex-1 flex flex-col min-h-0">
                 <div class="overflow-y-auto flex-1">
@@ -212,6 +189,109 @@
                 </div>
             </section>
         </div>
+
+        <!-- Detail View (Full Sidebar) -->
+        <div id="sidebar-detail-view" class="hidden flex flex-col h-full">
+            <!-- Header with close button -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center flex-shrink-0">
+                <h2 class="text-xl font-bold text-gray-900" id="sidebar-detail-name"></h2>
+                <button id="close-sidebar-detail" class="text-gray-400 hover:text-gray-600 p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scrollable content -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <!-- Key Info -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Rating</div>
+                        <div class="text-3xl font-bold text-gray-900" id="sidebar-detail-rating"></div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Price</div>
+                        <div class="text-3xl font-bold text-gray-900" id="sidebar-detail-price"></div>
+                    </div>
+                    <div class="col-span-2">
+                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Location</div>
+                        <div class="text-base font-medium text-gray-900" id="sidebar-detail-location"></div>
+                    </div>
+                    <div class="col-span-2">
+                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Date Visited</div>
+                        <div class="text-base font-medium text-gray-900" id="sidebar-detail-date"></div>
+                    </div>
+                </div>
+
+                <!-- Detailed Ratings -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Detailed Ratings</h3>
+                    <div id="sidebar-detail-ratings" class="space-y-3">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile Detail View (Below Map) -->
+    <div id="mobile-detail-view" class="hidden lg:hidden fixed left-0 right-0 bg-white shadow-xl transition-transform duration-300" style="z-index: 1000; top: calc(50vh + 60px); bottom: 0; overflow-y: auto;">
+        <!-- Header with close button -->
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white">
+            <h2 class="text-xl font-bold text-gray-900" id="mobile-detail-name"></h2>
+            <button id="close-mobile-detail" class="text-gray-400 hover:text-gray-600 p-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-4">
+            <!-- Key Info -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Rating</div>
+                    <div class="text-3xl font-bold text-gray-900" id="mobile-detail-rating"></div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Price</div>
+                    <div class="text-3xl font-bold text-gray-900" id="mobile-detail-price"></div>
+                </div>
+                <div class="col-span-2">
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Location</div>
+                    <div class="text-base font-medium text-gray-900" id="mobile-detail-location"></div>
+                </div>
+                <div class="col-span-2">
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Date Visited</div>
+                    <div class="text-base font-medium text-gray-900" id="mobile-detail-date"></div>
+                </div>
+            </div>
+
+            <!-- Detailed Ratings -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Detailed Ratings</h3>
+                <div id="mobile-detail-ratings" class="space-y-3">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+
+    <!-- Restaurants List -->
+    <section class="bg-white rounded-lg shadow overflow-hidden flex-1 flex flex-col min-h-0">
+        <div class="overflow-y-auto flex-1">
+            <div id="restaurants-list" class="divide-y divide-gray-200">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+    </div>
     </aside>
 
     <!-- Detailed View Modal -->
@@ -528,17 +608,24 @@
         }
 
         function showDetailInSidebar(restaurant) {
-            const detailSection = document.getElementById('detail-section');
-            const detailName = document.getElementById('detail-name');
-            const detailRating = document.getElementById('detail-rating');
-            const detailPrice = document.getElementById('detail-price');
-            const detailDate = document.getElementById('detail-date');
-            const detailRatings = document.getElementById('detail-ratings');
+            // Desktop: Show detail view in full sidebar
+            const sidebarMainContent = document.getElementById('sidebar-main-content');
+            const sidebarDetailView = document.getElementById('sidebar-detail-view');
+            const sidebarDetailName = document.getElementById('sidebar-detail-name');
+            const sidebarDetailRating = document.getElementById('sidebar-detail-rating');
+            const sidebarDetailPrice = document.getElementById('sidebar-detail-price');
+            const sidebarDetailLocation = document.getElementById('sidebar-detail-location');
+            const sidebarDetailDate = document.getElementById('sidebar-detail-date');
+            const sidebarDetailRatings = document.getElementById('sidebar-detail-ratings');
 
-            detailName.textContent = restaurant.Name;
-            detailRating.textContent = restaurant.mScore;
-            detailPrice.textContent = restaurant.Price;
-            detailDate.textContent = restaurant.Date;
+            // Mobile: Show detail view below map
+            const mobileDetailView = document.getElementById('mobile-detail-view');
+            const mobileDetailName = document.getElementById('mobile-detail-name');
+            const mobileDetailRating = document.getElementById('mobile-detail-rating');
+            const mobileDetailPrice = document.getElementById('mobile-detail-price');
+            const mobileDetailLocation = document.getElementById('mobile-detail-location');
+            const mobileDetailDate = document.getElementById('mobile-detail-date');
+            const mobileDetailRatings = document.getElementById('mobile-detail-ratings');
 
             const attributes = [
                 { name: 'Crust', value: restaurant.Crust },
@@ -552,23 +639,69 @@
                 { name: 'Oiliness', value: restaurant.Oiliness }
             ];
 
-            detailRatings.innerHTML = attributes.map(attr => {
+            const ratingsHtml = attributes.map(attr => {
                 const value = parseInt(attr.value);
                 const percentage = (value / 10) * 100;
                 return `
                     <div>
                         <div class="flex justify-between mb-1">
-                            <span class="font-medium text-gray-700">${attr.name}</span>
-                            <span class="font-medium text-gray-700">${attr.value}/10</span>
+                            <span class="text-sm font-medium text-gray-700">${attr.name}</span>
+                            <span class="text-sm font-medium text-gray-700">${attr.value}/10</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-1.5">
-                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${percentage}%"></div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${percentage}%"></div>
                         </div>
                     </div>
                 `;
             }).join('');
 
-            detailSection.classList.remove('hidden');
+            // Update desktop sidebar
+            sidebarDetailName.textContent = restaurant.Name;
+            sidebarDetailRating.textContent = restaurant.mScore;
+            sidebarDetailPrice.textContent = restaurant.Price;
+            sidebarDetailLocation.textContent = `${restaurant.Location}, ${restaurant.Country}`;
+            sidebarDetailDate.textContent = restaurant.Date;
+            sidebarDetailRatings.innerHTML = ratingsHtml;
+
+            // Update mobile view
+            mobileDetailName.textContent = restaurant.Name;
+            mobileDetailRating.textContent = restaurant.mScore;
+            mobileDetailPrice.textContent = restaurant.Price;
+            mobileDetailLocation.textContent = `${restaurant.Location}, ${restaurant.Country}`;
+            mobileDetailDate.textContent = restaurant.Date;
+            mobileDetailRatings.innerHTML = ratingsHtml;
+
+            // Show/hide appropriate views
+            sidebarMainContent.classList.add('hidden');
+            sidebarDetailView.classList.remove('hidden');
+            mobileDetailView.classList.remove('hidden');
+
+            // Adjust map height on mobile when detail view is open
+            const mapElement = document.getElementById('map');
+            if (mapElement) {
+                mapElement.classList.add('mobile-detail-open');
+            }
+        }
+
+        function hideDetailViews() {
+            const sidebarMainContent = document.getElementById('sidebar-main-content');
+            const sidebarDetailView = document.getElementById('sidebar-detail-view');
+            const mobileDetailView = document.getElementById('mobile-detail-view');
+            const mapElement = document.getElementById('map');
+
+            sidebarMainContent.classList.remove('hidden');
+            sidebarDetailView.classList.add('hidden');
+            mobileDetailView.classList.add('hidden');
+
+            // Restore map to full height on mobile
+            if (mapElement) {
+                mapElement.classList.remove('mobile-detail-open');
+            }
+
+            // Close any open popups on the map
+            if (map) {
+                map.closePopup();
+            }
         }
 
         function showDetail(restaurant) {
@@ -755,9 +888,10 @@
         const observer = new MutationObserver(populateMobileCountryFilter);
         observer.observe(document.getElementById('country-filter'), { childList: true });
 
-        document.getElementById('close-detail').addEventListener('click', () => {
-            document.getElementById('detail-section').classList.add('hidden');
-        });
+        // Close detail views
+        document.getElementById('close-sidebar-detail').addEventListener('click', hideDetailViews);
+        document.getElementById('close-mobile-detail').addEventListener('click', hideDetailViews);
+
         document.getElementById('close-modal').addEventListener('click', () => {
             document.getElementById('detail-modal').classList.add('hidden');
         });
