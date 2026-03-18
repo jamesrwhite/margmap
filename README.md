@@ -30,8 +30,6 @@ A web application for visualizing and rating pizza places on an interactive map.
 ## Project Structure
 
 ```text
-├── .github/workflows/     # GitHub Actions for deployment
-│   └── cd.yml            # Cloudflare Pages deployment workflow
 ├── scripts/              # Data processing scripts
 │   └── csv-to-json.js    # Convert CSV data to JSON format
 ├── src/                  # Web application source
@@ -162,7 +160,7 @@ pnpm ship
 - **Mapping**: Leaflet.js for interactive maps
 - **Data**: Google Sheets → CSV → JSON pipeline
 - **Build**: Node.js scripts with pnpm package manager
-- **Deployment**: Cloudflare Workers Assets via GitHub Actions
+- **Deployment**: Cloudflare Workers Assets (via `pnpm ship`)
 - **Environment**: Mise for development tooling
 
 ## Development Notes
