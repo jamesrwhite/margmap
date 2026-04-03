@@ -5,12 +5,13 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "pnpm prepare-data && vite build",
+        "build": "vite build && pnpm update-readme",
         "preview": "vite preview",
         "ship": "pnpm build && wrangler deploy",
         "prepare-data": "node scripts/csv-to-json.js src/data/ratings.csv src/data/ratings.json",
         "fetch-data": "mkdir -p src/data && curl -sL \"https://docs.google.com/spreadsheets/d/11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ/export?format=csv&id=11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ&gid=0\" | tr -d '\\r' > src/data/ratings.csv && pnpm prepare-data",
         "update-readme": "node scripts/update-readme-table.js",
+        "update-data": "pnpm fetch-data && pnpm prepare-data",
         "clean": "rm -f src/data/ratings.csv src/data/ratings.json && rm -rf dist"
     },
     "dependencies": {
