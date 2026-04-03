@@ -9,7 +9,7 @@
         "preview": "vite preview",
         "ship": "pnpm build && wrangler deploy",
         "prepare-data": "node scripts/csv-to-json.js src/data/ratings.csv src/data/ratings.json",
-        "fetch-data": "mkdir -p src/data && curl -sL \"https://docs.google.com/spreadsheets/d/11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ/export?format=csv&id=11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ&gid=0\" -o src/data/ratings.csv && pnpm prepare-data",
+        "fetch-data": "mkdir -p src/data && curl -sL \"https://docs.google.com/spreadsheets/d/11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ/export?format=csv&id=11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ&gid=0\" | tr -d '\\r' > src/data/ratings.csv && pnpm prepare-data",
         "update-readme": "node scripts/update-readme-table.js",
         "clean": "rm -f src/data/ratings.csv src/data/ratings.json && rm -rf dist"
     },

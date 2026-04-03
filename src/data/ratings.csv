@@ -1,21 +1,22 @@
 Name,mScore,Location,Lat,Lon,Country,Date,Price,Crust,Dough,Sauce,Cheese,Basil,Sliced,Sloppiness,Saltiness,Oiliness
 Monellis,8.5,Hastings,50.8555897,0.5878908,England,19/10/2024,£13.50,9,9,9,9,5,5,8,8,9
-Slice of Life,8.3,Busan,35.1731121,129.0714122,South Korea,10/10/2025,£11.14,7,8,8,9,10,10,9,8,9
+Slice of Life,8.4,Busan,35.1731121,129.0714122,South Korea,10/10/2025,£11.14,7,8,8,9,10,10,9,8,9
 Pizzarelli,8,St Leonards-on-Sea,50.8510778,0.5571361,England,22/08/2025,£11.99,8,7,8,9,5,10,9,8,9
-Le Bellini,8,Toulouse,43.6039846,1.4427967,France,23/09/2024,£10.80,9,8,8,8,5,5,9,8,8
+Le Bellini,7.9,Toulouse,43.6039846,1.4427967,France,23/09/2024,£10.80,9,8,8,8,5,5,9,8,8
 La Pizza,7.6,València,39.4703695,-0.3787153,Spain,30/08/2025,£10.82,8,7,8,7,10,0,8,8,8
-Brewing Brothers,7.4,Hastings,50.86104,0.584567,England,25/04/2025,£9.50,8,7,9,7,0,10,7,8,7
-The Crust,7.3,Bude,50.8290493,-4.5446109,England,13/08/2024,£12.00,8,8,7,7,5,5,7,8,7
+Brewing Brothers,7.2,Hastings,50.86104,0.584567,England,25/04/2025,£9.50,8,7,9,7,0,10,7,8,7
+The Crust,7.2,Bude,50.8290493,-4.5446109,England,13/08/2024,£12.00,8,8,7,7,5,5,7,8,7
 Rustico,7.2,Hastings,50.8548904,0.5771708,England,03/05/2025,£9.50,8,7,8,6,5,5,7,8,8
-Dough Ray Me,7,St Leonards-on-Sea,50.8521625,0.5609777,England,17/07/2025,£11.00,7,7,8,6,5,5,7,8,7
+Dough Ray Me,6.9,St Leonards-on-Sea,50.8521625,0.5609777,England,17/07/2025,£11.00,7,7,8,6,5,5,7,8,7
 Homeslice,6.9,City of London,51.5122136,-0.0924927,England,02/02/2026,£14.00,7,7,8,7,5,5,6,7,6
-Tredici,6.7,Cannes,43.5503134,7.0098032,France,09/08/2025,£14.00,7,6,8,6,5,0,7,8,7
-Magpie,6.6,Seoul,37.550263,126.9970831,South Korea,07/10/2025,£12.14,6,6,7,7,5,10,7,7,6
-La Saporita,6.4,St Leonards-on-Sea,50.8552458,0.5840028,England,31/10/2025,£9.95,6,6,7,7,0,10,7,7,7
+Tredici,6.6,Cannes,43.5503134,7.0098032,France,09/08/2025,£14.00,7,6,8,6,5,0,7,8,7
+Magpie,6.5,Seoul,37.550263,126.9970831,South Korea,07/10/2025,£12.14,6,6,7,7,5,10,7,7,6
+La Saporita,6.2,St Leonards-on-Sea,50.8552458,0.5840028,England,31/10/2025,£9.95,6,6,7,7,0,10,7,7,7
 The Rising Sun,6.2,Chelmsford,51.7234699,0.461216,England,01/02/2026,£10.00,7,6,7,6,0,10,6,7,7
-Bellisimo,5.8,Corfu,39.6251618,19.9209518,Greece,26/10/2024,£8.33,5,6,6,6,0,5,7,8,7
+Pizza Express,6.1,Hastings,50.8571107,0.5816422,England,01/04/2026,£15.90,6,6,7,7,0,5,6,8,7
 Marina Fountain,5.8,St Leonards-on-Sea,50.8510704,0.5429339,England,16/10/2024,£9.50,5,5,6,5,5,10,7,7,7
-The Boat House,5.8,Christchurch,50.7313752,-1.776065,England,19/04/2025,£14.00,5,6,7,6,0,10,5,6,6
-Wetherspoons,5.5,Gatwick,51.1536621,-0.1820629,England,19/09/2024,£13.25,6,6,6,6,0,0,7,5,6
-Casa de Pier,5.4,St Leonards-on-Sea,50.8530708,0.5719546,England,16/05/2025,£10.00,5,5,6,5,0,10,6,6,7
-Wetherspoons (Cornfield Garage),5.4,Eastbourne,50.767602,0.284555,England,08/03/2026,£9.28,5,5,6,6,0,0,6,5,6
+Bellisimo,5.7,Corfu,39.6251618,19.9209518,Greece,26/10/2024,£8.33,5,6,6,6,0,5,7,8,7
+The Boat House,5.6,Christchurch,50.7313752,-1.776065,England,19/04/2025,£14.00,5,6,7,6,0,10,5,6,6
+Wetherspoons,5.4,Gatwick,51.1536621,-0.1820629,England,19/09/2024,£13.25,6,6,6,6,0,0,7,5,6
+Casa de Pier,5.3,St Leonards-on-Sea,50.8530708,0.5719546,England,16/05/2025,£10.00,5,5,6,5,0,10,6,6,7
+Wetherspoons (Cornfield Garage),5,Eastbourne,50.767602,0.284555,England,08/03/2026,£9.28,5,5,6,6,0,0,6,5,6
