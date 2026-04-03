@@ -63,8 +63,9 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 ### Commands
 
 - `pnpm dev` - Development server with hot reload and source maps (unminified)
-- `pnpm build` - Production build with full minification and optimization
+- `pnpm build` - Production build with full minification and optimization (also updates the README ratings table)
 - `pnpm preview` - Serves the production build locally for testing (minified)
+- `pnpm ship` - Build and deploy to Cloudflare Workers Assets
 
 ## Getting Started
 
@@ -107,11 +108,13 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 ### Available Scripts
 
 - `pnpm dev` - Start Vite development server with hot reload
-- `pnpm build` - Build optimized production bundle (includes data preparation)
+- `pnpm build` - Build optimized production bundle and update README ratings table
 - `pnpm preview` - Preview production build locally
-- `pnpm ship` - Build and deploy to Cloudflare Pages
+- `pnpm ship` - Build and deploy to Cloudflare Workers Assets
 - `pnpm fetch-data` - Fetch CSV from Google Sheets and convert to JSON
 - `pnpm prepare-data` - Convert existing CSV to JSON
+- `pnpm update-data` - Fetch fresh data from Google Sheets and regenerate JSON
+- `pnpm update-readme` - Sync README ratings table from CSV
 - `pnpm clean` - Remove generated data files and build output
 
 ## Data Management
@@ -133,23 +136,21 @@ Since data is committed to the repository for simplified builds:
 2. **Regenerate local data**:
 
    ```bash
-   pnpm clean
-   pnpm fetch-data
+   pnpm update-data
+   pnpm update-readme
    ```
 
 3. **Commit and push changes**:
 
    ```bash
-   git add src/data/
+   git add src/data/ README.md
    git commit -m "Update restaurant data"
    git push origin main
    ```
 
-This will trigger automatic deployment to Cloudflare Pages.
-
 ## Deployment
 
-The application is deployed manually to Cloudflare Workers Assets from a local machine via:
+The application is deployed manually to [Cloudflare Workers Assets](https://developers.cloudflare.com/workers/static-assets/) from a local machine via:
 
 ```sh
 pnpm ship
