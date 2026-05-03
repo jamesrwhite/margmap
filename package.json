@@ -22,7 +22,7 @@
         "csv-parse": "^6.2.1",
         "postcss": "^8.5.8",
         "tailwindcss": "^3.4.19",
-        "vite": "^6.4.1",
+        "vite": "^6.4.2",
         "vite-plugin-html-minifier": "^1.0.5",
         "wrangler": "^4.80.0"
     },
