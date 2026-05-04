@@ -1,0 +1,16 @@
+name: Deploy
+description: Deploy the site to Cloudflare Workers
+
+inputs:
+  cloudflare-api-token:
+    description: Cloudflare API token
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Deploy to Cloudflare Workers
+      run: pnpm wrangler deploy
+      shell: bash
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ inputs.cloudflare-api-token }}
