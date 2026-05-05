@@ -1,0 +1,9 @@
+name: Deploy
+description: Deploy the site to Cloudflare Workers
+
+runs:
+  using: composite
+  steps:
+    - name: Deploy to Cloudflare Workers
+      run: pnpm wrangler deploy
+      shell: bash

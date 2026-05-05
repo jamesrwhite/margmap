@@ -1,0 +1,12 @@
+name: Build
+description: Build the site
+
+runs:
+  using: composite
+  steps:
+    - name: Setup
+      uses: ./.github/actions/setup
+
+    - name: Build
+      run: pnpm build
+      shell: bash
