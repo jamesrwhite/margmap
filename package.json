@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build && pnpm update-readme",
+        "build": "pnpm prepare-data && vite build && pnpm update-readme",
         "preview": "vite preview",
         "ship": "pnpm build && wrangler deploy",
         "prepare-data": "node scripts/csv-to-json.js src/data/ratings.csv src/data/ratings.json",
