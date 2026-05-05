@@ -8,10 +8,11 @@ A web application for visualizing and rating pizza places on an interactive map.
 |------|--------|----------|---------|------|-------|-------|-------|-------|--------|-------|--------|------------|-----------|----------|
 | [Monellis](https://www.google.com/maps/search/?api=1&query=Monellis%20Hastings%20England) | 8.5 | Hastings | England | 19/10/2024 | £13.50 | 9 | 9 | 9 | 9 | 5 | 5 | 8 | 8 | 9 |
 | [Slice of Life](https://www.google.com/maps/search/?api=1&query=Slice%20of%20Life%20Busan%20South%20Korea) | 8.4 | Busan | South Korea | 10/10/2025 | £11.14 | 7 | 8 | 8 | 9 | 10 | 10 | 9 | 8 | 9 |
+| [Oro di Napoli](https://www.google.com/maps/search/?api=1&query=Oro%20di%20Napoli%20Saint-Rapha%C3%ABl%20France) | 8.2 | Saint-Raphaël | France | 03/05/2026 | £8.64 | 7 | 8 | 9 | 8 | 10 | 10 | 7 | 8 | 8 |
 | [Pizzarelli](https://www.google.com/maps/search/?api=1&query=Pizzarelli%20St%20Leonards-on-Sea%20England) | 8 | St Leonards-on-Sea | England | 22/08/2025 | £11.99 | 8 | 7 | 8 | 9 | 5 | 10 | 9 | 8 | 9 |
 | [Le Bellini](https://www.google.com/maps/search/?api=1&query=Le%20Bellini%20Toulouse%20France) | 7.9 | Toulouse | France | 23/09/2024 | £10.80 | 9 | 8 | 8 | 8 | 5 | 5 | 9 | 8 | 8 |
 | [La Pizza](https://www.google.com/maps/search/?api=1&query=La%20Pizza%20Val%C3%A8ncia%20Spain) | 7.6 | València | Spain | 30/08/2025 | £10.82 | 8 | 7 | 8 | 7 | 10 | 0 | 8 | 8 | 8 |
-| [Brewing Brothers](https://www.google.com/maps/search/?api=1&query=Brewing%20Brothers%20Hastings%20England) | 7.2 | Hastings | England | 25/04/2025 | £9.50 | 8 | 7 | 9 | 7 | 0 | 10 | 7 | 8 | 7 |
+| [Brewing Brothers The Imperial](https://www.google.com/maps/search/?api=1&query=Brewing%20Brothers%20The%20Imperial%20Hastings%20England) | 7.2 | Hastings | England | 25/04/2025 | £9.50 | 8 | 7 | 9 | 7 | 0 | 10 | 7 | 8 | 7 |
 | [The Crust](https://www.google.com/maps/search/?api=1&query=The%20Crust%20Bude%20England) | 7.2 | Bude | England | 13/08/2024 | £12.00 | 8 | 8 | 7 | 7 | 5 | 5 | 7 | 8 | 7 |
 | [Rustico](https://www.google.com/maps/search/?api=1&query=Rustico%20Hastings%20England) | 7.2 | Hastings | England | 03/05/2025 | £9.50 | 8 | 7 | 8 | 6 | 5 | 5 | 7 | 8 | 8 |
 | [Dough Ray Me](https://www.google.com/maps/search/?api=1&query=Dough%20Ray%20Me%20St%20Leonards-on-Sea%20England) | 6.9 | St Leonards-on-Sea | England | 17/07/2025 | £11.00 | 7 | 7 | 8 | 6 | 5 | 5 | 7 | 8 | 7 |
