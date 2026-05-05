@@ -2,6 +2,7 @@
     "name": "margmap",
     "version": "1.0.0",
     "description": "A web application for visualizing and rating pizza places on an interactive map",
+    "packageManager": "pnpm@10.33.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
