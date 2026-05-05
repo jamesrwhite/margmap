@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Fetch latest data
-        run: pnpm fetch-data
+        run: pnpm update-data
 
       - name: Update README
         run: pnpm update-readme
