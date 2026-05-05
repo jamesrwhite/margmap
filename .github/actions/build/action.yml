@@ -1,5 +1,5 @@
 name: Build
-description: Fetch latest data and build the site
+description: Build the site
 
 runs:
   using: composite
