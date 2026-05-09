@@ -22,7 +22,7 @@ A web application for visualizing and rating pizza places on an interactive map.
 | [La Saporita](https://www.google.com/maps/search/?api=1&query=La%20Saporita%20St%20Leonards-on-Sea%20England) | 6.2 | St Leonards-on-Sea | England | 31/10/2025 | £9.95 | 6 | 6 | 7 | 7 | 0 | 10 | 7 | 7 | 7 |
 | [The Rising Sun](https://www.google.com/maps/search/?api=1&query=The%20Rising%20Sun%20Chelmsford%20England) | 6.2 | Chelmsford | England | 01/02/2026 | £10.00 | 7 | 6 | 7 | 6 | 0 | 10 | 6 | 7 | 7 |
 | [Pizza Express](https://www.google.com/maps/search/?api=1&query=Pizza%20Express%20Hastings%20England) | 6.1 | Hastings | England | 01/04/2026 | £15.90 | 6 | 6 | 7 | 7 | 0 | 5 | 6 | 8 | 7 |
-| [Marina Fountain](https://www.google.com/maps/search/?api=1&query=Marina%20Fountain%20St%20Leonards-on-Sea%20England) | 5.8 | St Leonards-on-Sea | England | 16/10/2024 | £9.50 | 5 | 5 | 6 | 5 | 5 | 10 | 7 | 7 | 7 |
+| [Marina Fountain](https://www.google.com/maps/search/?api=1&query=Marina%20Fountain%20St%20Leonards-on-Sea%20England) | 5.9 | St Leonards-on-Sea | England | 08/05/2026 | £11.50 | 6 | 6 | 7 | 5 | 0 | 10 | 6 | 8 | 7 |
 | [Bellisimo](https://www.google.com/maps/search/?api=1&query=Bellisimo%20Corfu%20Greece) | 5.7 | Corfu | Greece | 26/10/2024 | £8.33 | 5 | 6 | 6 | 6 | 0 | 5 | 7 | 8 | 7 |
 | [The Boat House](https://www.google.com/maps/search/?api=1&query=The%20Boat%20House%20Christchurch%20England) | 5.6 | Christchurch | England | 19/04/2025 | £14.00 | 5 | 6 | 7 | 6 | 0 | 10 | 5 | 6 | 6 |
 | [Wetherspoons](https://www.google.com/maps/search/?api=1&query=Wetherspoons%20Gatwick%20England) | 5.4 | Gatwick | England | 19/09/2024 | £13.25 | 6 | 6 | 6 | 6 | 0 | 0 | 7 | 5 | 6 |
