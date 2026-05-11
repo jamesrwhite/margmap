@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --header-height: 76px;
+}
+
 /* Base layout styles */
 body,
 html {
@@ -11,13 +15,17 @@ html {
     padding: 0;
     height: 100%;
     overflow: hidden;
+    background:
+        radial-gradient(circle at top left, rgba(251, 191, 36, 0.12), transparent 30%),
+        linear-gradient(180deg, #fff7ed 0%, #fff 25%);
+    font-family: "Avenir Next", "Segoe UI", sans-serif;
 }
 
 #map {
     width: 100%;
-    height: calc(100vh - 60px);
+    height: calc(100vh - var(--header-height));
     position: fixed;
-    top: 60px;
+    top: var(--header-height);
     left: 0;
     z-index: 1;
     background-color: #d6e8eb;
@@ -32,12 +40,16 @@ html {
     #map {
         right: 384px;
         width: auto;
-        height: calc(100vh - 60px);
+        height: calc(100vh - var(--header-height));
     }
 
     #map.mobile-detail-open {
-        height: calc(100vh - 60px);
+        height: calc(100vh - var(--header-height));
     }
+}
+
+.app-sidebar {
+    top: var(--header-height);
 }
 
 /* Custom marker styles */
@@ -53,6 +65,74 @@ html {
     font-size: 11px;
     color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.brand-mark {
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-mark span {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.panel-callout {
+    border: 1px solid rgba(31, 41, 55, 0.9);
+    background: linear-gradient(135deg, rgba(255, 247, 237, 0.98), rgba(255, 255, 255, 0.98));
+    border-radius: 1rem;
+    padding: 0.9rem 1rem;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+}
+
+.restaurant-list-item {
+    appearance: none;
+    border: 0;
+    background: transparent;
+}
+
+.restaurant-list-item:focus-visible,
+.empty-state-button:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: -2px;
+}
+
+.empty-state {
+    display: flex;
+    min-height: 14rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+.empty-state-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.empty-state-copy {
+    margin: 0;
+    max-width: 18rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.empty-state-button {
+    border: 1px solid #1f2937;
+    border-radius: 9999px;
+    padding: 0.65rem 1rem;
+    background: #fff;
+    color: #111827;
+    font-weight: 600;
     cursor: pointer;
 }
 

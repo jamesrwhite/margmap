@@ -7,7 +7,11 @@ let restaurants = [];
 let map;
 let markers = {};
 let markerLayer;
+let userMarker;
 let userSelectedRestaurant = false;
+let selectedRestaurant = null;
+let filteredRestaurants = [];
+let visibleRestaurants = [];
 
 // Restaurant rating attributes
 const RATING_ATTRIBUTES = ['Crust', 'Dough', 'Sauce', 'Cheese', 'Basil', 'Sliced', 'Sloppiness', 'Saltiness', 'Oiliness'];
@@ -42,6 +46,11 @@ function toggleMobileMenu(show) {
 
 document.getElementById('mobile-menu-toggle').addEventListener('click', () => toggleMobileMenu(true));
 document.getElementById('close-mobile-menu').addEventListener('click', () => toggleMobileMenu(false));
+document.getElementById('mobile-menu').addEventListener('click', (event) => {
+    if (event.target === event.currentTarget) {
+        toggleMobileMenu(false);
+    }
+});
 
 // Sync mobile and desktop filter inputs
 function syncFilters(sourceId, targetId) {
@@ -54,7 +63,7 @@ function syncFilters(sourceId, targetId) {
 
 // Set up filter input listeners
 const filterInputs = [
-    ['search-input', 'search-input-mobile'],
+    ['header-search-input', 'search-input-mobile'],
     ['country-filter', 'country-filter-mobile'],
     ['sort-by', 'sort-by-mobile'],
     ['rating-min', 'rating-min-mobile']
@@ -102,6 +111,10 @@ function parsePrice(priceStr) {
     return parseFloat(priceStr.replace('£', ''));
 }
 
+function isMobileView() {
+    return window.matchMedia('(max-width: 1023px)').matches;
+}
+
 function getRatingColor(rating) {
     const score = parseFloat(rating);
     if (score >= 8) return 'bg-red-100 text-red-800';
@@ -110,24 +123,36 @@ function getRatingColor(rating) {
     return 'bg-gray-100 text-gray-800';
 }
 
-function updateStats() {
-    const count = restaurants.length;
-    const avgRating = (restaurants.reduce((sum, r) => sum + parseFloat(r.mScore), 0) / count).toFixed(1);
-    const topRestaurant = restaurants.reduce((top, r) =>
-        parseFloat(r.mScore) > parseFloat(top.mScore) ? r : top
-    );
-    const countries = new Set(restaurants.map(r => r.Country));
+function updateStats(restaurantsForStats = restaurants) {
+    const count = restaurantsForStats.length;
+    const countries = new Set(restaurantsForStats.map(r => r.Country));
+    const totalRestaurants = restaurants.length;
 
     document.getElementById('total-count').textContent = count;
+    document.getElementById('total-count-context').textContent = `of ${totalRestaurants} total spots`;
+    document.getElementById('country-count').textContent = countries.size;
+    document.getElementById('results-count').textContent = `${count} shown`;
+    document.getElementById('results-count-mobile').textContent = `${count} shown`;
+
+    if (count === 0) {
+        document.getElementById('avg-rating').textContent = '—';
+        document.getElementById('top-restaurant').textContent = 'No matches';
+        return;
+    }
+
+    const avgRating = (restaurantsForStats.reduce((sum, r) => sum + parseFloat(r.mScore), 0) / count).toFixed(1);
+    const topRestaurant = restaurantsForStats.reduce((top, r) =>
+        parseFloat(r.mScore) > parseFloat(top.mScore) ? r : top
+    );
+
     document.getElementById('avg-rating').textContent = avgRating;
     document.getElementById('top-restaurant').textContent = `${topRestaurant.Name} (${topRestaurant.mScore})`;
-    document.getElementById('country-count').textContent = countries.size;
 
     // Populate country filter
     const countryFilter = document.getElementById('country-filter');
     const currentValue = countryFilter.value;
     countryFilter.innerHTML = '<option value="">All Countries</option>';
-    Array.from(countries).sort().forEach(country => {
+    Array.from(new Set(restaurants.map(r => r.Country))).sort().forEach(country => {
         const option = document.createElement('option');
         option.value = country;
         option.textContent = country;
@@ -136,22 +161,41 @@ function updateStats() {
     countryFilter.value = currentValue;
 }
 
-function renderRestaurants(filteredRestaurants) {
+function renderRestaurants(restaurantsToRender) {
     const list = document.getElementById('restaurants-list');
     const mobileList = document.getElementById('restaurants-list-mobile');
     list.innerHTML = '';
     mobileList.innerHTML = '';
 
-    filteredRestaurants.forEach(restaurant => {
+    if (restaurantsToRender.length === 0) {
+        const isFilterEmptyState = filteredRestaurants.length === 0;
+        const emptyStateMarkup = `
+            <div class="empty-state">
+                <p class="empty-state-title">${isFilterEmptyState ? 'No restaurants match these filters.' : 'No restaurants are visible in this map view.'}</p>
+                <p class="empty-state-copy">${isFilterEmptyState ? 'Try a lower minimum score, a broader search, or reset the filters.' : 'Pan or zoom the map to bring restaurants back into view.'}</p>
+                ${isFilterEmptyState ? '<button type="button" class="empty-state-button" data-clear-filters>Clear Filters</button>' : ''}
+            </div>
+        `;
+        list.innerHTML = emptyStateMarkup;
+        mobileList.innerHTML = emptyStateMarkup;
+        if (isFilterEmptyState) {
+            list.querySelector('[data-clear-filters]').addEventListener('click', clearFilters);
+            mobileList.querySelector('[data-clear-filters]').addEventListener('click', clearFilters);
+        }
+        return;
+    }
+
+    restaurantsToRender.forEach(restaurant => {
         const createListItem = () => {
-            const div = document.createElement('div');
-            div.className = 'p-3 hover:bg-gray-50 cursor-pointer transition';
-            div.onclick = () => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'restaurant-list-item w-full p-3 hover:bg-gray-50 cursor-pointer transition text-left';
+            button.onclick = () => {
                 focusOnRestaurant(restaurant);
                 toggleMobileMenu(false);
             };
 
-            div.innerHTML = `
+            button.innerHTML = `
                 <div class="flex justify-between items-start mb-1">
                     <div class="font-medium text-gray-900 text-sm">${restaurant.Name}</div>
                     <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${getRatingColor(restaurant.mScore)}">
@@ -161,15 +205,41 @@ function renderRestaurants(filteredRestaurants) {
                 <div class="text-xs text-gray-600">${restaurant.Location}, ${restaurant.Country}</div>
                 <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • ${restaurant.Price}</div>
             `;
-            return div;
+            return button;
         };
 
         list.appendChild(createListItem());
         mobileList.appendChild(createListItem());
     });
+}
 
-    // Update map to show only filtered restaurants
-    updateMapMarkers(filteredRestaurants);
+function getViewportRestaurants(restaurantsToCheck = filteredRestaurants) {
+    if (!map || restaurantsToCheck.length === 0) {
+        return restaurantsToCheck;
+    }
+
+    const bounds = map.getBounds();
+    return restaurantsToCheck.filter((restaurant) => {
+        const lat = parseFloat(restaurant.Lat);
+        const lon = parseFloat(restaurant.Lon);
+
+        if (Number.isNaN(lat) || Number.isNaN(lon)) {
+            return false;
+        }
+
+        return bounds.contains([lat, lon]);
+    });
+}
+
+function syncViewportRestaurants() {
+    visibleRestaurants = getViewportRestaurants(filteredRestaurants);
+
+    if (selectedRestaurant && !visibleRestaurants.some((restaurant) => restaurant.Name === selectedRestaurant.Name && restaurant.Lat === selectedRestaurant.Lat && restaurant.Lon === selectedRestaurant.Lon)) {
+        hideDetailViews();
+    }
+
+    updateStats(visibleRestaurants);
+    renderRestaurants(visibleRestaurants);
 }
 
 function focusOnRestaurant(restaurant) {
@@ -179,6 +249,7 @@ function focusOnRestaurant(restaurant) {
     if (lat && lon && map) {
         // Set flag to prevent auto-recentering
         userSelectedRestaurant = true;
+        selectedRestaurant = restaurant;
 
         // First, close any open popups
         map.closePopup();
@@ -192,6 +263,11 @@ function focusOnRestaurant(restaurant) {
                 animate: true,
                 duration: 0.5
             });
+
+            if (isMobileView()) {
+                showDetailInSidebar(restaurant);
+                return;
+            }
 
             // Open the marker popup if it exists
             const markerId = `${restaurant.Name}-${lat}-${lon}`;
@@ -237,36 +313,47 @@ function updateMapMarkers(filteredRestaurants) {
                 zIndexOffset: Math.round(rating * 100)
             }).addTo(markerLayer);
 
-            marker.bindPopup(`
-                <div class="popup-container">
-                    <div class="popup-title">${restaurant.Name}</div>
-                    <div class="popup-grid">
-                        <div>
-                            <div class="popup-label">Overall Rating</div>
-                            <div class="popup-value">${restaurant.mScore}</div>
-                        </div>
-                        <div>
-                            <div class="popup-label">Price</div>
-                            <div class="popup-value">${restaurant.Price}</div>
-                        </div>
-                        <div class="popup-location-full">
-                            <div class="popup-location-label">Location</div>
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.Name + ' ' + restaurant.Location + ' ' + restaurant.Country)}" target="_blank" rel="noopener noreferrer" class="popup-location-value" style="color: #2563eb; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-                                <svg style="width: 14px; height: 14px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                <span>${restaurant.Location}, ${restaurant.Country}</span>
-                            </a>
+            marker.on('click', () => {
+                selectedRestaurant = restaurant;
+                userSelectedRestaurant = true;
+                if (isMobileView()) {
+                    map.closePopup();
+                    showDetailInSidebar(restaurant);
+                }
+            });
+
+            // Open detail view when popup is opened on desktop
+            if (!isMobileView()) {
+                marker.bindPopup(`
+                    <div class="popup-container">
+                        <div class="popup-title">${restaurant.Name}</div>
+                        <div class="popup-grid">
+                            <div>
+                                <div class="popup-label">Overall Rating</div>
+                                <div class="popup-value">${restaurant.mScore}</div>
+                            </div>
+                            <div>
+                                <div class="popup-label">Price</div>
+                                <div class="popup-value">${restaurant.Price}</div>
+                            </div>
+                            <div class="popup-location-full">
+                                <div class="popup-location-label">Location</div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.Name + ' ' + restaurant.Location + ' ' + restaurant.Country)}" target="_blank" rel="noopener noreferrer" class="popup-location-value" style="color: #2563eb; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                    <svg style="width: 14px; height: 14px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <span>${restaurant.Location}, ${restaurant.Country}</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `, { maxWidth: 250 });
+                `, { maxWidth: 250 });
 
-            // Open detail view when popup is opened
-            marker.on('popupopen', () => {
-                showDetailInSidebar(restaurant);
-            });
+                marker.on('popupopen', () => {
+                    showDetailInSidebar(restaurant);
+                });
+            }
 
             // Store marker reference
             const markerId = `${restaurant.Name}-${lat}-${lon}`;
@@ -290,6 +377,7 @@ function updateMapMarkers(filteredRestaurants) {
 }
 
 function showDetailInSidebar(restaurant) {
+    selectedRestaurant = restaurant;
     const ratingsHtml = generateRatingsHtml(getRestaurantAttributes(restaurant));
     const location = `${restaurant.Location}, ${restaurant.Country}`;
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.Name + ' ' + restaurant.Location + ' ' + restaurant.Country)}`;
@@ -331,22 +419,143 @@ function hideDetailViews() {
     document.getElementById('sidebar-detail-view').classList.add('hidden');
     document.getElementById('mobile-detail-view').classList.add('hidden');
     document.getElementById('map').classList.remove('mobile-detail-open');
+    selectedRestaurant = null;
     if (map) map.closePopup();
+}
+
+function clearFilters() {
+    const defaults = {
+        search: '',
+        country: '',
+        sortBy: 'rating-desc',
+        ratingMin: '0'
+    };
+
+    document.getElementById('header-search-input').value = defaults.search;
+    document.getElementById('search-input-mobile').value = defaults.search;
+    document.getElementById('country-filter').value = defaults.country;
+    document.getElementById('country-filter-mobile').value = defaults.country;
+    document.getElementById('sort-by').value = defaults.sortBy;
+    document.getElementById('sort-by-mobile').value = defaults.sortBy;
+    document.getElementById('rating-min').value = defaults.ratingMin;
+    document.getElementById('rating-min-mobile').value = defaults.ratingMin;
+    syncRatingDisplay('rating-min');
+    filterAndSort();
+}
+
+function updateClearFilterButtons() {
+    const searchTerm = document.getElementById('header-search-input').value.trim();
+    const countryFilter = document.getElementById('country-filter').value;
+    const sortBy = document.getElementById('sort-by').value;
+    const ratingMin = document.getElementById('rating-min').value;
+
+    const hasActiveFilters = searchTerm !== ''
+        || countryFilter !== ''
+        || sortBy !== 'rating-desc'
+        || ratingMin !== '0';
+
+    document.getElementById('clear-filters').classList.toggle('hidden', !hasActiveFilters);
+    document.getElementById('clear-filters-mobile').classList.toggle('hidden', !hasActiveFilters);
+}
+
+function toRadians(value) {
+    return (value * Math.PI) / 180;
+}
+
+function getDistanceKm(fromLat, fromLon, toLat, toLon) {
+    const earthRadiusKm = 6371;
+    const dLat = toRadians(toLat - fromLat);
+    const dLon = toRadians(toLon - fromLon);
+    const a = Math.sin(dLat / 2) ** 2
+        + Math.cos(toRadians(fromLat)) * Math.cos(toRadians(toLat)) * Math.sin(dLon / 2) ** 2;
+    return earthRadiusKm * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+function setLocationStatus(message) {
+    document.getElementById('location-status-mobile').textContent = message;
+}
+
+function showUserLocation(lat, lon) {
+    if (!map) return;
+
+    if (userMarker) {
+        userMarker.setLatLng([lat, lon]);
+    } else {
+        userMarker = L.circleMarker([lat, lon], {
+            radius: 8,
+            color: '#ffffff',
+            weight: 3,
+            fillColor: '#2563eb',
+            fillOpacity: 1
+        }).addTo(map);
+    }
+}
+
+function locateUser() {
+    if (!navigator.geolocation) {
+        setLocationStatus('Geolocation is not available in this browser.');
+        return;
+    }
+
+    setLocationStatus('Finding your location...');
+
+    navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        showUserLocation(latitude, longitude);
+        map.setView([latitude, longitude], 11, {
+            animate: true,
+            duration: 0.5
+        });
+
+        const candidates = filteredRestaurants.length > 0 ? filteredRestaurants : restaurants;
+        let nearestRestaurant = null;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+
+        candidates.forEach((restaurant) => {
+            const lat = parseFloat(restaurant.Lat);
+            const lon = parseFloat(restaurant.Lon);
+            if (Number.isNaN(lat) || Number.isNaN(lon)) return;
+
+            const distance = getDistanceKm(latitude, longitude, lat, lon);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestRestaurant = restaurant;
+            }
+        });
+
+        if (nearestRestaurant) {
+            const miles = nearestDistance * 0.621371;
+            setLocationStatus(`Nearest visible spot: ${nearestRestaurant.Name} (${miles.toFixed(1)} mi)`);
+        } else {
+            setLocationStatus('Location found, but no restaurants are available in the current view.');
+        }
+    }, () => {
+        setLocationStatus('Location access was denied. Check browser permissions and try again.');
+    }, {
+        enableHighAccuracy: true,
+        timeout: 10000
+    });
 }
 
 function filterAndSort() {
     const countryFilter = document.getElementById('country-filter').value;
     const sortBy = document.getElementById('sort-by').value;
-    const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+    const headerSearch = document.getElementById('header-search-input').value.toLowerCase().trim();
+    const mobileSearch = document.getElementById('search-input-mobile').value.toLowerCase().trim();
+    const searchTerm = headerSearch || mobileSearch;
     const ratingMin = parseFloat(document.getElementById('rating-min').value);
 
+    updateClearFilterButtons();
+
     let filtered = restaurants;
+    userSelectedRestaurant = false;
 
     // Filter by search term
     if (searchTerm) {
         filtered = filtered.filter(r =>
             r.Name.toLowerCase().includes(searchTerm) ||
-            r.Location.toLowerCase().includes(searchTerm)
+            r.Location.toLowerCase().includes(searchTerm) ||
+            r.Country.toLowerCase().includes(searchTerm)
         );
     }
 
@@ -382,8 +591,13 @@ function filterAndSort() {
         }
     });
 
-    renderRestaurants(filtered);
-    updateMapMarkers(filtered);
+    filteredRestaurants = filtered;
+    if (selectedRestaurant && !filtered.some((restaurant) => restaurant.Name === selectedRestaurant.Name && restaurant.Lat === selectedRestaurant.Lat && restaurant.Lon === selectedRestaurant.Lon)) {
+        hideDetailViews();
+    }
+
+    updateMapMarkers(filteredRestaurants);
+    syncViewportRestaurants();
 }
 
 async function initMap() {
@@ -396,8 +610,8 @@ async function initMap() {
     }).setView([20, 0], 2);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap contributors, © CARTO',
-        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>',
+        maxZoom: 20,
         minZoom: 1,
         subdomains: 'abcd',
         noWrap: true
@@ -405,20 +619,24 @@ async function initMap() {
 
     // Create a layer group for markers
     markerLayer = L.layerGroup().addTo(map);
+
+    map.on('moveend', () => {
+        syncViewportRestaurants();
+    });
 }
 
 // Initialize
 async function init() {
     restaurants = await loadCSV();
     await initMap();
-    updateStats();
     filterAndSort();
 }
 
 init();
 
 // Event listeners - Desktop
-document.getElementById('search-input').addEventListener('input', filterAndSort);
+document.getElementById('header-search-input').addEventListener('input', filterAndSort);
+document.getElementById('header-locate-me').addEventListener('click', locateUser);
 document.getElementById('country-filter').addEventListener('change', filterAndSort);
 document.getElementById('sort-by').addEventListener('change', filterAndSort);
 document.getElementById('rating-min').addEventListener('input', () => {
@@ -430,6 +648,13 @@ document.getElementById('rating-min').addEventListener('input', () => {
 document.getElementById('search-input-mobile').addEventListener('input', filterAndSort);
 document.getElementById('country-filter-mobile').addEventListener('change', filterAndSort);
 document.getElementById('sort-by-mobile').addEventListener('change', filterAndSort);
+document.getElementById('rating-min-mobile').addEventListener('input', () => {
+    syncRatingDisplay('rating-min-mobile');
+    filterAndSort();
+});
+document.getElementById('clear-filters').addEventListener('click', clearFilters);
+document.getElementById('clear-filters-mobile').addEventListener('click', clearFilters);
+document.getElementById('locate-me-mobile').addEventListener('click', locateUser);
 
 // Populate mobile country filter
 function populateMobileCountryFilter() {

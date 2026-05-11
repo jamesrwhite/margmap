@@ -4,7 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MargMap</title>
+    <title>MargMap | Pizza Ratings Around the World</title>
+    <meta name="description" content="Browse MargMap to discover pizza ratings, filter by country and score, and explore the best pies on an interactive map.">
+    <meta property="og:title" content="MargMap | Pizza Ratings Around the World">
+    <meta property="og:description" content="Explore James White's pizza ratings on an interactive world map.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://margmap.com/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MargMap | Pizza Ratings Around the World">
+    <meta name="twitter:description" content="Filter, compare, and explore pizza ratings across countries on an interactive map.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍕</text></svg>">
     <link rel="stylesheet" href="/main.css">
 </head>
@@ -14,10 +22,35 @@
     <div id="map"></div>
 
     <!-- Header Overlay -->
-    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur shadow-sm border-b border-gray-200" style="z-index: 1000;">
-        <div class="px-4 py-3 md:py-4 flex justify-between items-center">
-            <h1 class="text-xl md:text-2xl font-bold text-gray-900">🍕 MargMap</h1>
-            <button id="mobile-menu-toggle" class="lg:hidden text-gray-600 hover:text-gray-900">
+    <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md border-b border-gray-800 shadow-sm" style="z-index: 1000;">
+        <div class="px-4 py-3 flex justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="brand-mark">
+                    <span>🍕</span>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">MargMap</h1>
+                    <p class="hidden md:block text-sm text-gray-600">Rating the one true Pizza</p>
+                </div>
+            </div>
+            <div class="hidden lg:flex flex-1 max-w-md ml-auto">
+                <label for="header-search-input" class="sr-only">Search Restaurants</label>
+                <div class="relative w-full">
+                    <button id="header-locate-me" type="button" aria-label="Use my location" class="absolute left-3 top-1/2 -translate-y-1/2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 text-white hover:bg-gray-700 transition">
+                        <svg class="w-3.5 h-3.5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21s-5-4.35-5-9a5 5 0 1110 0c0 4.65-5 9-5 9z"></path>
+                            <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"></circle>
+                        </svg>
+                    </button>
+                    <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </span>
+                    <input type="text" id="header-search-input" placeholder="Search by name, city, or country..." class="w-full border border-gray-800 bg-white/90 rounded-full pl-12 pr-11 py-2.5 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-700">
+                </div>
+            </div>
+            <button id="mobile-menu-toggle" class="lg:hidden text-gray-600 hover:text-gray-900" aria-label="Open filters and restaurant list">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
@@ -26,32 +59,46 @@
     </header>
 
     <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="fixed inset-0 bg-black/50 lg:hidden hidden" style="z-index: 999;" onclick="if(event.target === this) document.getElementById('mobile-menu').classList.add('hidden');"></div>
+    <div id="mobile-menu" class="fixed inset-0 bg-black/50 lg:hidden hidden" style="z-index: 999;"></div>
 
     <!-- Mobile Filters Menu -->
     <div id="mobile-filters" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-lg transform translate-x-full transition-transform duration-300 lg:hidden overflow-y-auto" style="z-index: 1001;">
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white">
+        <div class="p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 bg-white">
             <h2 class="text-lg font-semibold text-gray-900">Filters</h2>
-            <button id="close-mobile-menu" class="text-gray-400 hover:text-gray-600">
+            <button id="close-mobile-menu" class="text-gray-400 hover:text-gray-600" aria-label="Close filters panel">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
         <div class="p-4 space-y-4">
+            <section class="panel-callout">
+                <p class="text-sm font-semibold text-gray-900">Rating the one true Pizza</p>
+                <p class="mt-1 text-sm text-gray-600">Tap a marker or search by city, country, or pizza spot to jump straight to the best slices.</p>
+            </section>
+            <section class="grid grid-cols-2 gap-2 text-xs">
+                <span class="legend-chip legend-red justify-center">8+ elite</span>
+                <span class="legend-chip legend-orange justify-center">7+ strong</span>
+                <span class="legend-chip legend-yellow justify-center">6+ decent</span>
+                <span class="legend-chip legend-gray justify-center">&lt;6 skip</span>
+            </section>
             <div>
                 <label for="search-input-mobile" class="block text-xs font-medium text-gray-700 mb-1">Search Restaurants</label>
-                <input type="text" id="search-input-mobile" placeholder="Search by name..." class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="search-input-mobile" placeholder="Search by name..." class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-700">
+            </div>
+            <div class="space-y-2">
+                <button id="locate-me-mobile" type="button" class="w-full rounded-md bg-gray-900 text-white px-3 py-2 text-sm font-medium hover:bg-gray-800 transition">Use My Location</button>
+                <p id="location-status-mobile" class="text-xs text-gray-600 min-h-4"></p>
             </div>
             <div>
                 <label for="country-filter-mobile" class="block text-xs font-medium text-gray-700 mb-1">Country</label>
-                <select id="country-filter-mobile" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="country-filter-mobile" class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-700">
                     <option value="">All Countries</option>
                 </select>
             </div>
             <div>
                 <label for="sort-by-mobile" class="block text-xs font-medium text-gray-700 mb-1">Sort by</label>
-                <select id="sort-by-mobile" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="sort-by-mobile" class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-700">
                     <option value="rating-desc">Rating (High to Low)</option>
                     <option value="rating-asc">Rating (Low to High)</option>
                     <option value="date-desc">Date (Newest)</option>
@@ -71,9 +118,13 @@
                     <span>10</span>
                 </div>
             </div>
+            <button id="clear-filters-mobile" type="button" class="hidden w-full rounded-md border border-gray-800 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Clear Filters</button>
             <hr class="my-2">
             <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-2">Restaurants</h3>
+                <div class="flex items-center justify-between mb-2 gap-3">
+                    <h3 class="text-sm font-semibold text-gray-900">Restaurants</h3>
+                    <span id="results-count-mobile" class="text-xs font-medium text-gray-500">0 shown</span>
+                </div>
                 <div id="restaurants-list-mobile" class="space-y-1 divide-y divide-gray-200">
                     <!-- Populated by JavaScript -->
                 </div>
@@ -81,45 +132,43 @@
         </div>
     </div>
     <!-- Desktop Sidebar -->
-    <aside class="fixed bottom-0 left-0 right-0 lg:top-[60px] lg:right-0 lg:left-auto lg:bottom-0 lg:w-96 lg:flex hidden bg-white/95 backdrop-blur shadow-xl max-h-[60vh] lg:max-h-[calc(100vh-60px)] flex-col" style="z-index: 1000;">
+    <aside class="fixed bottom-0 left-0 right-0 lg:right-0 lg:left-auto lg:bottom-0 lg:w-96 lg:flex hidden bg-white/95 backdrop-blur shadow-xl border-l border-gray-800 max-h-[60vh] lg:max-h-[calc(100vh-var(--header-height))] flex-col app-sidebar" style="z-index: 1000;">
         <!-- Main Content (Stats, Filters, List) -->
         <div id="sidebar-main-content" class="p-4 flex flex-col flex-1 overflow-hidden">
             <!-- Stats Cards -->
             <section class="grid grid-cols-2 gap-2 mb-4 flex-shrink-0">
-                <article class="bg-white rounded-lg shadow p-3">
-                    <h2 class="text-xs font-medium text-gray-600 uppercase">Total</h2>
+                <article class="bg-white rounded-xl shadow-sm border border-gray-800 p-3">
+                    <h2 class="text-xs font-medium text-gray-600 uppercase">Showing</h2>
                     <p class="text-2xl font-bold text-gray-900 mt-1" id="total-count">0</p>
+                    <p class="text-xs text-gray-500 mt-1" id="total-count-context">of 0 total spots</p>
                 </article>
-                <article class="bg-white rounded-lg shadow p-3">
-                    <h2 class="text-xs font-medium text-gray-600 uppercase">Avg Rating</h2>
+                <article class="bg-white rounded-xl shadow-sm border border-gray-800 p-3">
+                    <h2 class="text-xs font-medium text-gray-600 uppercase">Avg Shown</h2>
                     <p class="text-2xl font-bold text-gray-900 mt-1" id="avg-rating">0</p>
+                    <p class="text-xs text-gray-500 mt-1">Based on visible results</p>
                 </article>
-                <article class="bg-white rounded-lg shadow p-3">
-                    <h2 class="text-xs font-medium text-gray-600 uppercase">Top Rated</h2>
+                <article class="bg-white rounded-xl shadow-sm border border-gray-800 p-3">
+                    <h2 class="text-xs font-medium text-gray-600 uppercase">Best Shown</h2>
                     <p class="text-sm font-bold text-gray-900 mt-1" id="top-restaurant">-</p>
                 </article>
-                <article class="bg-white rounded-lg shadow p-3">
-                    <h2 class="text-xs font-medium text-gray-600 uppercase">Countries</h2>
+                <article class="bg-white rounded-xl shadow-sm border border-gray-800 p-3">
+                    <h2 class="text-xs font-medium text-gray-600 uppercase">Countries Shown</h2>
                     <p class="text-2xl font-bold text-gray-900 mt-1" id="country-count">0</p>
                 </article>
             </section>
 
             <!-- Filters -->
-            <section class="bg-white rounded-lg shadow p-3 mb-4 flex-shrink-0">
+            <section class="bg-white rounded-xl shadow-sm border border-gray-800 p-3 mb-4 flex-shrink-0">
                 <div class="space-y-2">
                     <div>
-                        <label for="search-input" class="block text-xs font-medium text-gray-700 mb-1">Search Restaurants</label>
-                        <input type="text" id="search-input" placeholder="Search by name..." class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
                         <label for="country-filter" class="block text-xs font-medium text-gray-700 mb-1">Country</label>
-                        <select id="country-filter" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select id="country-filter" class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-700">
                             <option value="">All Countries</option>
                         </select>
                     </div>
                     <div>
                         <label for="sort-by" class="block text-xs font-medium text-gray-700 mb-1">Sort by</label>
-                        <select id="sort-by" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select id="sort-by" class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-700">
                             <option value="rating-desc">Rating (High to Low)</option>
                             <option value="rating-asc">Rating (Low to High)</option>
                             <option value="date-desc">Date (Newest)</option>
@@ -139,11 +188,16 @@
                             <span>10</span>
                         </div>
                     </div>
+                    <button id="clear-filters" type="button" class="hidden w-full rounded-md border border-gray-800 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Clear Filters</button>
                 </div>
             </section>
 
             <!-- Restaurants List -->
-            <section class="bg-white rounded-lg shadow overflow-hidden flex-1 flex flex-col min-h-0">
+            <section class="bg-white rounded-xl shadow-sm border border-gray-800 overflow-hidden flex-1 flex flex-col min-h-0">
+                <div class="px-3 py-2 border-b border-gray-700 bg-gray-50/70 flex items-center justify-between gap-3">
+                    <h3 class="text-sm font-semibold text-gray-900">Visible Restaurants</h3>
+                    <span id="results-count" class="text-xs font-medium text-gray-500">0 shown</span>
+                </div>
                 <div class="overflow-y-auto flex-1">
                     <div id="restaurants-list" class="divide-y divide-gray-200">
                         <!-- Populated by JavaScript -->
@@ -155,9 +209,9 @@
         <!-- Detail View (Full Sidebar) -->
         <div id="sidebar-detail-view" class="hidden h-full flex-col">
             <!-- Header with close button -->
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center flex-shrink-0">
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center flex-shrink-0">
                 <h2 class="text-xl font-bold text-gray-900" id="sidebar-detail-name"></h2>
-                <button id="close-sidebar-detail" class="text-gray-400 hover:text-gray-600 p-1">
+                <button id="close-sidebar-detail" class="text-gray-400 hover:text-gray-600 p-1" aria-label="Close restaurant detail panel">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -206,9 +260,9 @@
     <!-- Mobile Detail View (Below Map) -->
     <div id="mobile-detail-view" class="hidden lg:hidden fixed left-0 right-0 bg-white shadow-xl transition-transform duration-300" style="z-index: 1000; top: calc(50vh + 60px); bottom: 0; overflow-y: auto;">
         <!-- Header with close button -->
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white">
+        <div class="p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 bg-white">
             <h2 class="text-xl font-bold text-gray-900" id="mobile-detail-name"></h2>
-            <button id="close-mobile-detail" class="text-gray-400 hover:text-gray-600 p-1">
+            <button id="close-mobile-detail" class="text-gray-400 hover:text-gray-600 p-1" aria-label="Close restaurant detail panel">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
