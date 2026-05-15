@@ -12,6 +12,7 @@ let userSelectedRestaurant = false;
 let selectedRestaurant = null;
 let filteredRestaurants = [];
 let visibleRestaurants = [];
+let detailPhotoRequestToken = 0;
 
 // Restaurant rating attributes
 const RATING_ATTRIBUTES = ['Crust', 'Dough', 'Sauce', 'Cheese', 'Basil', 'Sliced', 'Sloppiness', 'Saltiness', 'Oiliness'];
@@ -36,6 +37,88 @@ function generateRatingsHtml(attributes) {
             </div>
         `;
     }).join('');
+}
+
+function setDetailPhotoState(shellId, containerId, attributionId, markup, attributionMarkup = '', state = 'empty') {
+    const shell = document.getElementById(shellId);
+    const container = document.getElementById(containerId);
+    const attribution = document.getElementById(attributionId);
+
+    shell.classList.toggle('hidden', state === 'empty');
+    container.classList.toggle('is-empty', state === 'empty');
+    container.classList.toggle('is-loading', state === 'loading');
+    container.innerHTML = markup;
+
+    attribution.innerHTML = attributionMarkup;
+    attribution.classList.toggle('hidden', attributionMarkup === '');
+}
+
+function resetDetailPhotos(message = 'Photo unavailable') {
+    const placeholderMarkup = `<div class="detail-photo-placeholder">${message}</div>`;
+    setDetailPhotoState('sidebar-detail-photo-shell', 'sidebar-detail-photo', 'sidebar-detail-photo-attribution', placeholderMarkup, '', 'empty');
+    setDetailPhotoState('mobile-detail-photo-shell', 'mobile-detail-photo', 'mobile-detail-photo-attribution', placeholderMarkup, '', 'empty');
+}
+
+function showDetailPhotoLoading() {
+    const placeholderMarkup = '<div class="detail-photo-placeholder">Loading photo...</div>';
+    setDetailPhotoState('sidebar-detail-photo-shell', 'sidebar-detail-photo', 'sidebar-detail-photo-attribution', placeholderMarkup, '', 'loading');
+    setDetailPhotoState('mobile-detail-photo-shell', 'mobile-detail-photo', 'mobile-detail-photo-attribution', placeholderMarkup, '', 'loading');
+}
+
+function buildPhotoAttributionMarkup(authorAttributions = []) {
+    if (authorAttributions.length === 0) {
+        return '';
+    }
+
+    const links = authorAttributions.map((entry) => {
+        const displayName = entry.displayName || 'Google Maps';
+        if (entry.uri) {
+            return `<a href="${entry.uri}" target="_blank" rel="noopener noreferrer">${displayName}</a>`;
+        }
+
+        return displayName;
+    });
+
+    return `Photo: ${links.join(', ')}`;
+}
+
+async function loadDetailPhoto(restaurant, requestToken) {
+    if (!restaurant.googlePlaceId) {
+        resetDetailPhotos();
+        return;
+    }
+
+    showDetailPhotoLoading();
+
+    try {
+        const response = await fetch(`/api/place-photo/${encodeURIComponent(restaurant.googlePlaceId)}?w=1200&h=900`);
+        if (requestToken !== detailPhotoRequestToken || selectedRestaurant !== restaurant) {
+            return;
+        }
+
+        if (!response.ok) {
+            resetDetailPhotos();
+            return;
+        }
+
+        const payload = await response.json();
+        if (!payload.imageUrl) {
+            resetDetailPhotos();
+            return;
+        }
+
+        const imageMarkup = `<img src="${payload.imageUrl}" alt="${restaurant.Name} on Google Maps">`;
+        const attributionMarkup = buildPhotoAttributionMarkup(payload.authorAttributions);
+
+        setDetailPhotoState('sidebar-detail-photo-shell', 'sidebar-detail-photo', 'sidebar-detail-photo-attribution', imageMarkup, attributionMarkup, 'photo');
+        setDetailPhotoState('mobile-detail-photo-shell', 'mobile-detail-photo', 'mobile-detail-photo-attribution', imageMarkup, attributionMarkup, 'photo');
+    } catch (error) {
+        if (requestToken !== detailPhotoRequestToken) {
+            return;
+        }
+
+        resetDetailPhotos();
+    }
 }
 
 // Mobile menu toggle
@@ -378,6 +461,8 @@ function updateMapMarkers(filteredRestaurants) {
 
 function showDetailInSidebar(restaurant) {
     selectedRestaurant = restaurant;
+    detailPhotoRequestToken += 1;
+    loadDetailPhoto(restaurant, detailPhotoRequestToken);
     const ratingsHtml = generateRatingsHtml(getRestaurantAttributes(restaurant));
     const location = `${restaurant.Location}, ${restaurant.Country}`;
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.Name + ' ' + restaurant.Location + ' ' + restaurant.Country)}`;
@@ -420,6 +505,8 @@ function hideDetailViews() {
     document.getElementById('mobile-detail-view').classList.add('hidden');
     document.getElementById('map').classList.remove('mobile-detail-open');
     selectedRestaurant = null;
+    detailPhotoRequestToken += 1;
+    resetDetailPhotos();
     if (map) map.closePopup();
 }
 

@@ -72,16 +72,6 @@
             </button>
         </div>
         <div class="p-4 space-y-4">
-            <section class="panel-callout">
-                <p class="text-sm font-semibold text-gray-900">Rating the one true Pizza</p>
-                <p class="mt-1 text-sm text-gray-600">Tap a marker or search by city, country, or pizza spot to jump straight to the best slices.</p>
-            </section>
-            <section class="grid grid-cols-2 gap-2 text-xs">
-                <span class="legend-chip legend-red justify-center">8+ elite</span>
-                <span class="legend-chip legend-orange justify-center">7+ strong</span>
-                <span class="legend-chip legend-yellow justify-center">6+ decent</span>
-                <span class="legend-chip legend-gray justify-center">&lt;6 skip</span>
-            </section>
             <div>
                 <label for="search-input-mobile" class="block text-xs font-medium text-gray-700 mb-1">Search Restaurants</label>
                 <input type="text" id="search-input-mobile" placeholder="Search by name..." class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-700">
@@ -220,6 +210,13 @@
 
             <!-- Scrollable content -->
             <div class="flex-1 overflow-y-auto p-4">
+                <div id="sidebar-detail-photo-shell" class="detail-photo-shell mb-6 hidden">
+                    <div id="sidebar-detail-photo" class="detail-photo is-empty">
+                        <div class="detail-photo-placeholder">Photo unavailable</div>
+                    </div>
+                    <div id="sidebar-detail-photo-attribution" class="detail-photo-attribution hidden"></div>
+                </div>
+
                 <!-- Key Info -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div>
@@ -258,7 +255,7 @@
     </aside>
 
     <!-- Mobile Detail View (Below Map) -->
-    <div id="mobile-detail-view" class="hidden lg:hidden fixed left-0 right-0 bg-white shadow-xl transition-transform duration-300" style="z-index: 1000; top: calc(50vh + 60px); bottom: 0; overflow-y: auto;">
+    <div id="mobile-detail-view" class="hidden lg:hidden fixed left-0 right-0 bg-white shadow-xl transition-transform duration-300" style="z-index: 1000; top: calc(50vh + var(--header-height)); bottom: 0; overflow-y: auto;">
         <!-- Header with close button -->
         <div class="p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 bg-white">
             <h2 class="text-xl font-bold text-gray-900" id="mobile-detail-name"></h2>
@@ -271,6 +268,13 @@
 
         <!-- Content -->
         <div class="p-4">
+            <div id="mobile-detail-photo-shell" class="detail-photo-shell mb-6 hidden">
+                <div id="mobile-detail-photo" class="detail-photo is-empty">
+                    <div class="detail-photo-placeholder">Photo unavailable</div>
+                </div>
+                <div id="mobile-detail-photo-attribution" class="detail-photo-attribution hidden"></div>
+            </div>
+
             <!-- Key Info -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
