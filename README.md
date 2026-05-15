@@ -11,6 +11,7 @@ A web application for visualizing and rating pizza places on an interactive map.
 | [Oro di Napoli](https://www.google.com/maps/search/?api=1&query=Oro%20di%20Napoli%20Saint-Rapha%C3%ABl%20France) | 8.2 | Saint-Raphaël | France | 03/05/2026 | £8.64 | 7 | 8 | 9 | 8 | 10 | 10 | 7 | 8 | 8 |
 | [Pizzarelli](https://www.google.com/maps/search/?api=1&query=Pizzarelli%20St%20Leonards-on-Sea%20England) | 8 | St Leonards-on-Sea | England | 22/08/2025 | £11.99 | 8 | 7 | 8 | 9 | 5 | 10 | 9 | 8 | 9 |
 | [Le Bellini](https://www.google.com/maps/search/?api=1&query=Le%20Bellini%20Toulouse%20France) | 7.9 | Toulouse | France | 23/09/2024 | £10.80 | 9 | 8 | 8 | 8 | 5 | 5 | 9 | 8 | 8 |
+| [Dora's](https://www.google.com/maps/search/?api=1&query=Dora's%20St%20Leonards-on-Sea%20England) | 7.8 | St Leonards-on-Sea | England | 14/06/2026 | £10.00 | 8 | 7 | 8 | 7 | 10 | 10 | 7 | 8 | 8 |
 | [La Pizza](https://www.google.com/maps/search/?api=1&query=La%20Pizza%20Val%C3%A8ncia%20Spain) | 7.6 | València | Spain | 30/08/2025 | £10.82 | 8 | 7 | 8 | 7 | 10 | 0 | 8 | 8 | 8 |
 | [Brewing Brothers The Imperial](https://www.google.com/maps/search/?api=1&query=Brewing%20Brothers%20The%20Imperial%20Hastings%20England) | 7.2 | Hastings | England | 25/04/2025 | £9.50 | 8 | 7 | 9 | 7 | 0 | 10 | 7 | 8 | 7 |
 | [The Crust](https://www.google.com/maps/search/?api=1&query=The%20Crust%20Bude%20England) | 7.2 | Bude | England | 13/08/2024 | £12.00 | 8 | 8 | 7 | 7 | 5 | 5 | 7 | 8 | 7 |
@@ -21,10 +22,10 @@ A web application for visualizing and rating pizza places on an interactive map.
 | [Magpie](https://www.google.com/maps/search/?api=1&query=Magpie%20Seoul%20South%20Korea) | 6.5 | Seoul | South Korea | 07/10/2025 | £12.14 | 6 | 6 | 7 | 7 | 5 | 10 | 7 | 7 | 6 |
 | [La Saporita](https://www.google.com/maps/search/?api=1&query=La%20Saporita%20St%20Leonards-on-Sea%20England) | 6.2 | St Leonards-on-Sea | England | 31/10/2025 | £9.95 | 6 | 6 | 7 | 7 | 0 | 10 | 7 | 7 | 7 |
 | [The Rising Sun](https://www.google.com/maps/search/?api=1&query=The%20Rising%20Sun%20Chelmsford%20England) | 6.2 | Chelmsford | England | 01/02/2026 | £10.00 | 7 | 6 | 7 | 6 | 0 | 10 | 6 | 7 | 7 |
-| [Pizza Express](https://www.google.com/maps/search/?api=1&query=Pizza%20Express%20Hastings%20England) | 6.1 | Hastings | England | 01/04/2026 | £15.90 | 6 | 6 | 7 | 7 | 0 | 5 | 6 | 8 | 7 |
+| [PizzaExpress](https://www.google.com/maps/search/?api=1&query=PizzaExpress%20Hastings%20England) | 6.1 | Hastings | England | 01/04/2026 | £15.90 | 6 | 6 | 7 | 7 | 0 | 5 | 6 | 8 | 7 |
 | [Marina Fountain](https://www.google.com/maps/search/?api=1&query=Marina%20Fountain%20St%20Leonards-on-Sea%20England) | 5.9 | St Leonards-on-Sea | England | 08/05/2026 | £11.50 | 6 | 6 | 7 | 5 | 0 | 10 | 6 | 8 | 7 |
-| [Bellisimo](https://www.google.com/maps/search/?api=1&query=Bellisimo%20Corfu%20Greece) | 5.7 | Corfu | Greece | 26/10/2024 | £8.33 | 5 | 6 | 6 | 6 | 0 | 5 | 7 | 8 | 7 |
-| [The Boat House](https://www.google.com/maps/search/?api=1&query=The%20Boat%20House%20Christchurch%20England) | 5.6 | Christchurch | England | 19/04/2025 | £14.00 | 5 | 6 | 7 | 6 | 0 | 10 | 5 | 6 | 6 |
+| [Bellissimo](https://www.google.com/maps/search/?api=1&query=Bellissimo%20Corfu%20Greece) | 5.7 | Corfu | Greece | 26/10/2024 | £8.33 | 5 | 6 | 6 | 6 | 0 | 5 | 7 | 8 | 7 |
+| [The Boathouse](https://www.google.com/maps/search/?api=1&query=The%20Boathouse%20Christchurch%20England) | 5.6 | Christchurch | England | 19/04/2025 | £14.00 | 5 | 6 | 7 | 6 | 0 | 10 | 5 | 6 | 6 |
 | [Wetherspoons](https://www.google.com/maps/search/?api=1&query=Wetherspoons%20Gatwick%20England) | 5.4 | Gatwick | England | 19/09/2024 | £13.25 | 6 | 6 | 6 | 6 | 0 | 0 | 7 | 5 | 6 |
 | [Casa de Pier](https://www.google.com/maps/search/?api=1&query=Casa%20de%20Pier%20St%20Leonards-on-Sea%20England) | 5.3 | St Leonards-on-Sea | England | 16/05/2025 | £10.00 | 5 | 5 | 6 | 5 | 0 | 10 | 6 | 6 | 7 |
 | [Wetherspoons (Cornfield Garage)](https://www.google.com/maps/search/?api=1&query=Wetherspoons%20(Cornfield%20Garage)%20Eastbourne%20England) | 5 | Eastbourne | England | 08/03/2026 | £9.28 | 5 | 5 | 6 | 6 | 0 | 0 | 6 | 5 | 6 |
