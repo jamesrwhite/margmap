@@ -64,9 +64,9 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 
 ### Commands
 
-- `pnpm dev` - Development server with hot reload and source maps (unminified)
+- `pnpm dev` - Worker-first development server on `http://localhost:8787` with asset rebuilds and photo API routes
 - `pnpm build` - Production build with full minification and optimization (also updates the README ratings table)
-- `pnpm preview` - Serves the production build locally for testing (minified)
+- `pnpm preview` - Builds and serves the production worker locally on `http://localhost:8787`
 - `pnpm ship` - Build and deploy to Cloudflare Workers Assets
 
 ## Getting Started
@@ -105,13 +105,13 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 
 5. **Access the application**
 
-   Open your browser to `http://localhost:5173` (Vite default port)
+   Open your browser to `http://localhost:8787`
 
 ### Available Scripts
 
-- `pnpm dev` - Start Vite development server with hot reload
+- `pnpm dev` - Start the local Cloudflare Worker plus asset rebuild watcher
 - `pnpm build` - Build optimized production bundle and update README ratings table
-- `pnpm preview` - Preview production build locally
+- `pnpm preview` - Preview production worker locally
 - `pnpm ship` - Build and deploy to Cloudflare Workers Assets
 - `pnpm fetch-data` - Fetch CSV from Google Sheets and convert to JSON
 - `pnpm prepare-data` - Convert existing CSV to JSON
@@ -172,6 +172,7 @@ pnpm ship
 - The application uses a responsive design that works on both desktop and mobile
 - Map view is available on larger screens, with a list-only view on mobile
 - Data conversion happens automatically during the build process
+- Photo lookups are served through the Cloudflare Worker, so local development should use `pnpm dev` instead of plain Vite
 - All source code is in the `src/` directory for easy deployment
 
 ## Contributing
