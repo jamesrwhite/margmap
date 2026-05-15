@@ -6,14 +6,17 @@
     "type": "module",
     "scripts": {
         "dev": "node scripts/dev-worker.js",
+        "dev:frontend": "vite --host 127.0.0.1 --port 8080",
         "build": "pnpm prepare-data && vite build && pnpm update-readme",
-        "preview": "pnpm build && wrangler dev --port 8787",
+        "check": "node scripts/check-data.js && vite build && node --check worker.js",
+        "preview": "pnpm prepare-data && vite build && wrangler dev --port 8788",
         "ship": "pnpm build && wrangler deploy",
         "prepare-data": "node scripts/csv-to-json.js src/data/ratings.csv src/data/ratings.json",
         "enrich-google-places": "node scripts/enrich-google-places.js",
-        "fetch-data": "mkdir -p src/data && curl -sL \"https://docs.google.com/spreadsheets/d/11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ/export?format=csv&id=11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ&gid=0\" | tr -d '\\r' > src/data/ratings.csv && pnpm prepare-data",
+        "fetch-csv": "mkdir -p src/data && curl -sL \"https://docs.google.com/spreadsheets/d/11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ/export?format=csv&id=11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ&gid=0\" | tr -d '\\r' > src/data/ratings.csv",
+        "fetch-data": "pnpm fetch-csv && pnpm prepare-data",
         "update-readme": "node scripts/update-readme-table.js",
-        "update-data": "pnpm clean && pnpm fetch-data && pnpm prepare-data",
+        "update-data": "pnpm fetch-csv && pnpm enrich-google-places && pnpm prepare-data && pnpm update-readme",
         "clean": "rm -f src/data/ratings.csv src/data/ratings.json && rm -rf dist"
     },
     "dependencies": {

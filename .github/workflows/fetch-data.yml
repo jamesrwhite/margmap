@@ -17,11 +17,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Fetch latest data
+      - name: Update data
         run: pnpm update-data
-
-      - name: Update README
-        run: pnpm update-readme
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
       - name: Commit and push
         run: |

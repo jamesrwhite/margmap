@@ -8,9 +8,10 @@ A vanilla JS + Leaflet.js pizza-rating map app. No framework (no React/Vue). Dat
 
 ```
 Google Sheets (source of truth)
-    └─ pnpm fetch-data ──→ src/data/ratings.csv  (committed)
-                               └─ pnpm prepare-data ──→ src/data/ratings.json
-                                                             └─ Vite build ──→ dist/data/ratings.json
+    └─ pnpm update-data ──→ src/data/ratings.csv  (committed)
+                              ├─ src/data/google-places.json
+                              └─ pnpm prepare-data ──→ src/data/ratings.json
+                                                            └─ Vite build ──→ dist/data/ratings.json
 ```
 
 - `vite.config.js` sets `root: 'src'` and outputs to `dist/`. A custom Vite plugin (`copy-data`) copies `ratings.json` into `dist/data/` at bundle time.
@@ -20,11 +21,16 @@ Google Sheets (source of truth)
 
 | Command | Effect |
 |---|---|
-| `pnpm dev` | Dev server at `http://localhost:8080` |
-| `pnpm build` | Runs `prepare-data` then Vite build |
-| `pnpm preview` | Serve production build at port 8080 |
+| `pnpm dev` | Worker-first dev server at `http://localhost:8787` |
+| `pnpm dev:frontend` | Vite-only dev server at `http://127.0.0.1:8080` without Worker routes |
+| `pnpm build` | Runs `prepare-data`, Vite build, then updates the README table |
+| `pnpm check` | Non-mutating CI validation: verify data, build assets, syntax-check Worker |
+| `pnpm preview` | Serve production Worker locally at `http://localhost:8788` |
+| `pnpm fetch-csv` | Pull fresh CSV from Google Sheets only |
 | `pnpm fetch-data` | Pull fresh CSV from Google Sheets + convert to JSON |
 | `pnpm prepare-data` | Convert existing `ratings.csv` → `ratings.json` only |
+| `pnpm enrich-google-places` | Add missing Google place IDs for photo lookups |
+| `pnpm update-data` | Fetch CSV, enrich place IDs, regenerate JSON, and sync README |
 | `pnpm update-readme` | Sync README restaurant table from CSV |
 | `pnpm ship` | Full build + `wrangler deploy` to Cloudflare |
 | `pnpm clean` | Remove `src/data/ratings.*` and `dist/` |
@@ -46,6 +52,9 @@ Each restaurant record (fields in `ratings.json`):
 ## Scripts
 
 - `scripts/csv-to-json.js` – standalone Node ESM script; also exported as `csvToJson` for programmatic use.
+- `scripts/check-data.js` – verifies checked-in `ratings.json` matches `ratings.csv` without rewriting tracked data.
+- `scripts/dev-worker.js` – runs the Worker-first local dev flow: prepare data, build assets, watch Vite output, and start Wrangler.
+- `scripts/enrich-google-places.js` – stores Google place IDs in `src/data/google-places.json`; it only requires `GOOGLE_MAPS_API_KEY` when missing restaurants need matching.
 - `scripts/update-readme-table.js` – rewrites the `## Restaurant Ratings` section in `README.md` between the two heading markers. Run after any data change.
 
 ## Deployment
@@ -55,7 +64,6 @@ Deployed via **Cloudflare Workers Assets** (`wrangler.jsonc`), not Cloudflare Pa
 ## Adding a New Restaurant
 
 1. Add the row to the Google Sheets document.
-2. `pnpm fetch-data` – updates CSV and JSON.
-3. `pnpm update-readme` – syncs README table.
-4. `git add src/data/ README.md && git commit -m "Add <restaurant name>"`
-5. `pnpm ship` to deploy.
+2. `pnpm update-data` – updates CSV, Google place IDs, JSON, and README.
+3. `git add src/data/ README.md && git commit -m "Add <restaurant name>"`
+4. `pnpm ship` to deploy.

@@ -5,5 +5,5 @@ runs:
   using: composite
   steps:
     - name: Deploy to Cloudflare Workers
-      run: pnpm wrangler deploy
+      run: pnpm exec wrangler deploy
       shell: bash

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
+const devPort = process.env.PORT || '8787';
 
 function spawnProcess(command, args, label) {
     const child = spawn(command, args, {
@@ -80,7 +81,7 @@ process.on('SIGTERM', () => shutdown(0));
 
         children.push(
             spawnProcess(vitePath, ['build', '--watch'], 'vite build --watch'),
-            spawnProcess(wranglerPath, ['dev', '--port', '8787'], 'wrangler dev')
+            spawnProcess(wranglerPath, ['dev', '--port', devPort, '--live-reload'], 'wrangler dev')
         );
     } catch (error) {
         console.error(error.message);

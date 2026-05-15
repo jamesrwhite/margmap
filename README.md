@@ -33,16 +33,21 @@ A web application for visualizing and rating pizza places on an interactive map.
 ## Project Structure
 
 ```text
-├── scripts/              # Data processing scripts
-│   └── csv-to-json.js    # Convert CSV data to JSON format
+├── scripts/              # Data and local dev helper scripts
+│   ├── csv-to-json.js    # Convert CSV data to JSON format
+│   ├── check-data.js     # Verify checked-in JSON matches CSV
+│   ├── dev-worker.js     # Worker-first local dev runner
+│   └── enrich-google-places.js # Store Google place IDs for restaurant photos
 ├── src/                  # Web application source
 │   ├── index.html        # Main HTML file
 │   ├── main.js           # Application logic and Leaflet integration
-│   ├── styles.css        # Tailwind CSS and Leaflet styles
+│   ├── main.css          # Tailwind CSS and Leaflet styles
 │   └── data/            # Data directory
+│       ├── google-places.json # Stored Google place IDs by restaurant
 │       ├── ratings.csv   # CSV data fetched from Google Sheets
 │       └── ratings.json  # Processed JSON data for the app
 ├── dist/                 # Production build output (generated)
+├── worker.js             # Cloudflare Worker routes and photo proxy
 ├── vite.config.js        # Vite build configuration
 ├── tailwind.config.js    # Tailwind CSS configuration
 ├── postcss.config.js     # PostCSS configuration
@@ -64,9 +69,11 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 
 ### Commands
 
-- `pnpm dev` - Worker-first development server on `http://localhost:8787` with asset rebuilds and photo API routes
+- `pnpm dev` - Worker-first development server on `http://localhost:8787` with asset rebuilds, live reload, and photo API routes
+- `pnpm dev:frontend` - Vite-only frontend server on `http://127.0.0.1:8080` without Worker photo routes
+- `pnpm check` - Non-mutating CI validation: verify data, build assets, and syntax-check the Worker
 - `pnpm build` - Production build with full minification and optimization (also updates the README ratings table)
-- `pnpm preview` - Builds and serves the production worker locally on `http://localhost:8787`
+- `pnpm preview` - Builds and serves the production worker locally on `http://localhost:8788`
 - `pnpm ship` - Build and deploy to Cloudflare Workers Assets
 
 ## Getting Started
@@ -75,6 +82,7 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 
 - Node.js and pnpm
 - A Google Sheets document with restaurant data
+- `GOOGLE_MAPS_API_KEY` in `.env.local` for local photo API calls and place enrichment
 
 ### Local Development
 
@@ -109,13 +117,17 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 
 ### Available Scripts
 
-- `pnpm dev` - Start the local Cloudflare Worker plus asset rebuild watcher
+- `pnpm dev` - Start the local Cloudflare Worker plus asset rebuild watcher on port 8787
+- `pnpm dev:frontend` - Start Vite only on port 8080 for frontend-only work
+- `pnpm check` - Run the CI validation build without updating README
 - `pnpm build` - Build optimized production bundle and update README ratings table
-- `pnpm preview` - Preview production worker locally
+- `pnpm preview` - Preview production worker locally on port 8788
 - `pnpm ship` - Build and deploy to Cloudflare Workers Assets
+- `pnpm fetch-csv` - Fetch the raw CSV from Google Sheets only
 - `pnpm fetch-data` - Fetch CSV from Google Sheets and convert to JSON
+- `pnpm enrich-google-places` - Match restaurants to Google place IDs for photo lookups
 - `pnpm prepare-data` - Convert existing CSV to JSON
-- `pnpm update-data` - Fetch fresh data from Google Sheets and regenerate JSON
+- `pnpm update-data` - Fetch fresh data, enrich missing Google place IDs, regenerate JSON, and sync README
 - `pnpm update-readme` - Sync README ratings table from CSV
 - `pnpm clean` - Remove generated data files and build output
 
@@ -139,7 +151,6 @@ Since data is committed to the repository for simplified builds:
 
    ```bash
    pnpm update-data
-   pnpm update-readme
    ```
 
 3. **Commit and push changes**:
@@ -173,11 +184,12 @@ pnpm ship
 - Map view is available on larger screens, with a list-only view on mobile
 - Data conversion happens automatically during the build process
 - Photo lookups are served through the Cloudflare Worker, so local development should use `pnpm dev` instead of plain Vite
+- `pnpm update-data` requires `GOOGLE_MAPS_API_KEY` when new restaurants need Google place IDs
 - All source code is in the `src/` directory for easy deployment
 
 ## Contributing
 
 1. Update restaurant data in the Google Sheets document
-2. Run `pnpm fetch-data` to regenerate the data files
+2. Run `pnpm update-data` to regenerate data, place IDs, and the README table
 3. Test locally with `pnpm dev`
 4. Commit and push changes to trigger deployment

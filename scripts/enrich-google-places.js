@@ -124,11 +124,6 @@ async function fetchPlaceCandidate(restaurant) {
 }
 
 async function main() {
-    if (!GOOGLE_MAPS_API_KEY) {
-        console.error('❌ Missing GOOGLE_MAPS_API_KEY');
-        process.exit(1);
-    }
-
     if (!fs.existsSync(CSV_PATH)) {
         console.error(`❌ ratings.csv not found at ${CSV_PATH}`);
         process.exit(1);
@@ -136,13 +131,23 @@ async function main() {
 
     const restaurants = loadRestaurants();
     const googlePlacesMap = loadGooglePlacesMap();
-
-    for (const restaurant of restaurants) {
+    const missingRestaurants = restaurants.filter((restaurant) => {
         const key = createRestaurantKey(restaurant);
-        if (googlePlacesMap[key]?.googlePlaceId) {
-            continue;
-        }
+        return !googlePlacesMap[key]?.googlePlaceId;
+    });
 
+    if (missingRestaurants.length === 0) {
+        console.log('✅ All restaurants have Google place IDs');
+        return;
+    }
+
+    if (!GOOGLE_MAPS_API_KEY) {
+        console.error(`❌ Missing GOOGLE_MAPS_API_KEY; ${missingRestaurants.length} restaurants need Google place IDs`);
+        process.exit(1);
+    }
+
+    for (const restaurant of missingRestaurants) {
+        const key = createRestaurantKey(restaurant);
         const candidate = await fetchPlaceCandidate(restaurant);
         if (!candidate?.id) {
             console.warn(`⚠️ No confident Google Places match for ${restaurant.Name}`);
