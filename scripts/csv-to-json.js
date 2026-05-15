@@ -7,6 +7,22 @@ import { parse } from 'csv-parse/sync';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const GOOGLE_PLACES_MAP_PATH = path.resolve(__dirname, '..', 'src', 'data', 'google-places.json');
+
+function createRestaurantKey(restaurant) {
+    return [restaurant.Name, restaurant.Location, restaurant.Country]
+        .map((value) => String(value || '').trim().toLowerCase())
+        .join('::');
+}
+
+function loadGooglePlacesMap() {
+    if (!fs.existsSync(GOOGLE_PLACES_MAP_PATH)) {
+        return {};
+    }
+
+    const raw = fs.readFileSync(GOOGLE_PLACES_MAP_PATH, 'utf-8');
+    return JSON.parse(raw);
+}
 
 /**
  * Convert CSV file to JSON array of objects
@@ -16,6 +32,7 @@ const __dirname = path.dirname(__filename);
 function csvToJson(inputFile, outputFile) {
     try {
         const csvContent = fs.readFileSync(inputFile, 'utf-8');
+        const googlePlacesMap = loadGooglePlacesMap();
 
         // Parse CSV using csv-parse
         const data = parse(csvContent, {
@@ -28,10 +45,20 @@ function csvToJson(inputFile, outputFile) {
             throw new Error('CSV file must have at least one data row');
         }
 
+        const enrichedData = data.map((restaurant) => {
+            const googlePlacesEntry = googlePlacesMap[createRestaurantKey(restaurant)];
+
+            return {
+                ...restaurant,
+                googlePlaceId: googlePlacesEntry?.googlePlaceId || '',
+                googlePlaceMatch: googlePlacesEntry?.matchedName || '',
+            };
+        });
+
         // Write JSON output
-        fs.writeFileSync(outputFile, JSON.stringify(data, null, 2), 'utf-8');
+        fs.writeFileSync(outputFile, JSON.stringify(enrichedData, null, 2), 'utf-8');
         console.log(`✅ Converted ${inputFile} to ${outputFile}`);
-        console.log(`📊 ${data.length} records converted`);
+        console.log(`📊 ${enrichedData.length} records converted`);
 
     } catch (error) {
         console.error(`❌ Error converting CSV to JSON: ${error.message}`);
@@ -39,28 +66,28 @@ function csvToJson(inputFile, outputFile) {
     }
 }
 
-// Main execution
-const args = process.argv.slice(2);
+if (process.argv[1] === __filename) {
+    const args = process.argv.slice(2);
 
-if (args.length !== 2) {
-    console.error('Usage: node csv-to-json.js input.csv output.json');
-    process.exit(1);
+    if (args.length !== 2) {
+        console.error('Usage: node csv-to-json.js input.csv output.json');
+        process.exit(1);
+    }
+
+    const [inputFile, outputFile] = args;
+
+    if (!fs.existsSync(inputFile)) {
+        console.error(`❌ Input file not found: ${inputFile}`);
+        process.exit(1);
+    }
+
+    const outputDir = path.dirname(outputFile);
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    csvToJson(inputFile, outputFile);
 }
-
-const [inputFile, outputFile] = args;
-
-// Ensure input file exists
-if (!fs.existsSync(inputFile)) {
-    console.error(`❌ Input file not found: ${inputFile}`);
-    process.exit(1);
-}
-
-// Ensure output directory exists
-const outputDir = path.dirname(outputFile);
-if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-}
-
-csvToJson(inputFile, outputFile);
 
 export { csvToJson };
+export { createRestaurantKey };
