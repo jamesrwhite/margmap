@@ -122,10 +122,6 @@ async function cachePhotoMediaResponse(env, cacheKey, descriptor, width, height)
     const headers = new Headers(upstreamResponse.headers);
     headers.set('Cache-Control', buildCacheControl(MEDIA_CACHE_TTL));
 
-    if (descriptor.authorAttributions.length > 0) {
-        headers.set('X-MargMap-Photo-Attribution', JSON.stringify(descriptor.authorAttributions));
-    }
-
     const response = new Response(upstreamResponse.body, {
         status: upstreamResponse.status,
         statusText: upstreamResponse.statusText,
