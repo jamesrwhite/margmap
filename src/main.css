@@ -69,17 +69,16 @@ html {
 }
 
 .brand-mark {
-    width: 2rem;
-    height: 2rem;
+    width: auto;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
 }
 
-.brand-mark svg {
-    width: 100%;
-    height: 100%;
+.brand-mark span {
+    font-size: 2.5rem;
+    line-height: 1;
 }
 
 .panel-callout {
