@@ -154,5 +154,11 @@
     "matchedName": "Dora's",
     "matchedAddress": "28 Norman Rd, St Leonards, Saint Leonards-on-sea TN37 6AE, UK",
     "matchedAt": "2026-05-15T09:24:34.043Z"
+  },
+  "porlock weir hotel::porlock weir::england": {
+    "googlePlaceId": "ChIJG-9rM7vZbUgRGMBsQIqnZec",
+    "matchedName": "Porlock Weir Hotel",
+    "matchedAddress": "Porlock Weir, Minehead TA24 8PB, UK",
+    "matchedAt": "2026-07-24T13:01:00.630Z"
   }
 }
