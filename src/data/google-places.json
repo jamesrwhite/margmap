@@ -160,5 +160,11 @@
     "matchedName": "Porlock Weir Hotel",
     "matchedAddress": "Porlock Weir, Minehead TA24 8PB, UK",
     "matchedAt": "2026-07-24T13:01:00.630Z"
+  },
+  "marghe::milan::italy": {
+    "googlePlaceId": "ChIJu6Vl_cHGhkcRmTjYHL9TLDU",
+    "matchedName": "MARGHE",
+    "matchedAddress": "Via Plinio, 6, 20129 Milano MI, Italy",
+    "matchedAt": "2026-07-31T21:02:35.185Z"
   }
 }
