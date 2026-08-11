@@ -5,31 +5,29 @@
     "packageManager": "pnpm@11.20.0",
     "type": "module",
     "scripts": {
-        "dev": "node scripts/dev-worker.js",
-        "dev:frontend": "vite --host 127.0.0.1 --port 8080",
-        "build": "pnpm prepare-data && vite build && pnpm update-readme",
-        "check": "node scripts/check-data.js && vite build && node --check worker.js",
-        "preview": "pnpm prepare-data && vite build && wrangler dev --port 8788",
+        "dev": "pnpm prepare-data && astro dev",
+        "build": "pnpm prepare-data && astro build && pnpm update-readme",
+        "check": "pnpm prepare-data && astro build",
+        "preview": "pnpm prepare-data && astro build && wrangler dev --port 8788",
         "ship": "pnpm build && wrangler deploy",
-        "prepare-data": "node scripts/csv-to-json.js src/data/ratings.csv src/data/ratings.json",
+        "prepare-data": "node scripts/csv-to-json.js src/data/ratings.csv public/data/ratings.json",
         "enrich-google-places": "node scripts/enrich-google-places.js",
         "fetch-csv": "mkdir -p src/data && curl -sL \"https://docs.google.com/spreadsheets/d/11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ/export?format=csv&id=11YkHrgVDMG8CW5mtdGxlV74Qi1aJNiABADpsDP4eEfQ&gid=0\" | tr -d '\\r' > src/data/ratings.csv",
         "fetch-data": "pnpm fetch-csv && pnpm prepare-data",
         "update-readme": "node scripts/update-readme-table.js",
         "update-data": "pnpm fetch-csv && pnpm enrich-google-places && pnpm prepare-data && pnpm update-readme",
-        "clean": "rm -f src/data/ratings.csv src/data/ratings.json && rm -rf dist"
+        "clean": "rm -f src/data/ratings.csv public/data/ratings.json && rm -rf dist"
     },
     "dependencies": {
         "leaflet": "^1.9.4"
     },
     "devDependencies": {
-        "@tailwindcss/postcss": "^4.3.3",
+        "@astrojs/cloudflare": "^14.2.0",
+        "@tailwindcss/vite": "^4.3.3",
+        "astro": "^7.2.0",
         "csv-parse": "^7.0.2",
-        "postcss": "^8.5.25",
         "tailwindcss": "^4.3.3",
-        "vite": "^8.2.0",
-        "vite-plugin-html-minifier": "^1.0.5",
-        "wrangler": "^4.118.0"
+        "wrangler": "4.116.0"
     },
     "private": true
 }

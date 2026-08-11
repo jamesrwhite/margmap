@@ -1,6 +1,6 @@
 # 🍕 MargMap
 
-A web application for visualizing and rating pizza places on an interactive map. Data is maintained in a Google Sheets document and automatically converted to JSON for the web application.
+A web application for visualizing and rating pizza places on an interactive map, built with [Astro](https://astro.build/). Data is maintained in a Google Sheets document and automatically converted to JSON for the web application.
 
 ## Restaurant Ratings
 
@@ -38,45 +38,56 @@ A web application for visualizing and rating pizza places on an interactive map.
 ```text
 ├── scripts/              # Data and local dev helper scripts
 │   ├── csv-to-json.js    # Convert CSV data to JSON format
-│   ├── check-data.js     # Verify checked-in JSON matches CSV
-│   ├── dev-worker.js     # Worker-first local dev runner
-│   └── enrich-google-places.js # Store Google place IDs for restaurant photos
+│   ├── enrich-google-places.js # Store Google place IDs for restaurant photos
+│   └── update-readme-table.js  # Sync this README's ratings table from the CSV
 ├── src/                  # Web application source
-│   ├── index.html        # Main HTML file
-│   ├── main.js           # Application logic and Leaflet integration
-│   ├── main.css          # Tailwind CSS and Leaflet styles
-│   └── data/            # Data directory
+│   ├── pages/
+│   │   ├── index.astro   # Route: / (prerendered static page)
+│   │   └── api/           # On-demand routes: Google Places photo proxy
+│   ├── layouts/
+│   │   └── Layout.astro  # <html> shell: meta tags, CSS import, main.js script
+│   ├── components/       # Header, MobileFilters, Sidebar, MobileDetailView
+│   ├── lib/
+│   │   └── photos.js     # Shared helpers for the photo API routes
+│   ├── scripts/
+│   │   └── main.js       # Application logic and Leaflet integration
+│   ├── styles/
+│   │   └── main.css      # Tailwind CSS and Leaflet styles
+│   └── data/              # Data directory
 │       ├── google-places.json # Stored Google place IDs by restaurant
-│       ├── ratings.csv   # CSV data fetched from Google Sheets
-│       └── ratings.json  # Processed JSON data for the app
-├── dist/                 # Production build output (generated)
-├── worker.js             # Cloudflare Worker routes and photo proxy
-├── vite.config.js        # Vite build configuration
-├── postcss.config.js     # PostCSS configuration (Tailwind CSS v4 plugin)
+│       └── ratings.csv   # CSV data fetched from Google Sheets
+├── public/
+│   └── data/
+│       └── ratings.json  # Processed JSON data for the app (generated, gitignored)
+├── dist/                 # Production build output (generated): client/ (static assets) + server/ (Worker)
+├── astro.config.mjs      # Astro build configuration (Cloudflare adapter, Tailwind CSS v4 Vite plugin)
+├── wrangler.jsonc         # Cloudflare Worker/deploy configuration
 └── mise.toml            # Development environment config
 ```
 
 ## Build System
 
-The application uses [Vite](https://vitejs.dev/) for optimal bundling and performance:
+The application uses [Astro](https://astro.build/) with the `@astrojs/cloudflare` adapter, so the whole app — static homepage and the Google Places photo-proxy API — builds and deploys as a single Cloudflare Worker (no separate hand-written worker script):
 
-- **CSS**: Styles imported via `<link>` tag in HTML, processed by PostCSS/Tailwind
-- **Leaflet CSS**: Imported from node_modules via CSS `@import` in styles.css
-- **Tailwind CSS**: Purged and minified in production
+- **Templating**: `.astro` components (layout + Header/Sidebar/MobileFilters/MobileDetailView) compose the single page today, and provide a template for adding more routes (e.g. a page per restaurant) later
+- **API routes**: `src/pages/api/place-photo/[placeId].js` and `src/pages/api/place-photo-media/[placeId].js` run on-demand (`export const prerender = false`), reading bindings via `import { env } from 'cloudflare:workers'` and `context.locals.cfContext.waitUntil`
+- **CSS**: Tailwind CSS v4 via the `@tailwindcss/vite` plugin, imported in the layout
+- **Leaflet CSS**: Imported from node_modules via CSS `@import` in `main.css`
 - **Leaflet**: Bundled as ES module
-- **HTML**: Minified with whitespace removal
+- **HTML**: Minified by Astro by default
 - **Code Splitting**: Automatic chunk splitting for optimal loading
 - **Minification**: JavaScript minified with esbuild
 - **Tree Shaking**: Unused code eliminated
 
+> **Note:** `wrangler` and `@cloudflare/vite-plugin` are pinned to specific versions in `package.json`/`pnpm-workspace.yaml`, and `astro.config.mjs` sets `prerenderEnvironment: 'node'` on the adapter — both work around active upstream bugs. See the comments in those files and `AGENTS.md` before upgrading.
+
 ### Commands
 
-- `pnpm dev` - Worker-first development server on `http://localhost:8787` with asset rebuilds, live reload, and photo API routes
-- `pnpm dev:frontend` - Vite-only frontend server on `http://127.0.0.1:8080` without Worker photo routes
-- `pnpm check` - Non-mutating CI validation: verify data, build assets, and syntax-check the Worker
+- `pnpm dev` - Astro dev server on `http://127.0.0.1:8787`, serving the frontend and `/api/*` routes together
+- `pnpm check` - Non-mutating CI validation: regenerate data and build
 - `pnpm build` - Production build with full minification and optimization (also updates the README ratings table)
-- `pnpm preview` - Builds and serves the production worker locally on `http://localhost:8788`
-- `pnpm ship` - Build and deploy to Cloudflare Workers Assets
+- `pnpm preview` - Builds and serves the production Worker locally via `wrangler dev` on `http://localhost:8788`
+- `pnpm ship` - Build and deploy to Cloudflare Workers
 
 ## Getting Started
 
@@ -84,7 +95,7 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 
 - Node.js and pnpm
 - A Google Sheets document with restaurant data
-- `GOOGLE_MAPS_API_KEY` in `.env.local` for local photo API calls and place enrichment
+- `GOOGLE_MAPS_API_KEY` in `.dev.vars` for local photo API calls, and in your shell environment for `pnpm enrich-google-places`/`pnpm update-data`
 
 ### Local Development
 
@@ -115,16 +126,17 @@ The application uses [Vite](https://vitejs.dev/) for optimal bundling and perfor
 
 5. **Access the application**
 
-   Open your browser to `http://localhost:8787`
+   Open your browser to `http://127.0.0.1:8787`
+
+   `pnpm dev` runs `astro dev` as a background daemon; use `astro dev status`, `astro dev logs`, or `astro dev stop` to manage it.
 
 ### Available Scripts
 
-- `pnpm dev` - Start the local Cloudflare Worker plus asset rebuild watcher on port 8787
-- `pnpm dev:frontend` - Start Vite only on port 8080 for frontend-only work
+- `pnpm dev` - Start the Astro dev server (frontend + `/api/*` routes) on port 8787
 - `pnpm check` - Run the CI validation build without updating README
 - `pnpm build` - Build optimized production bundle and update README ratings table
-- `pnpm preview` - Preview production worker locally on port 8788
-- `pnpm ship` - Build and deploy to Cloudflare Workers Assets
+- `pnpm preview` - Preview the production Worker locally (via `wrangler dev`) on port 8788
+- `pnpm ship` - Build and deploy to Cloudflare Workers
 - `pnpm fetch-csv` - Fetch the raw CSV from Google Sheets only
 - `pnpm fetch-data` - Fetch CSV from Google Sheets and convert to JSON
 - `pnpm enrich-google-places` - Match restaurants to Google place IDs for photo lookups
@@ -165,19 +177,21 @@ Since data is committed to the repository for simplified builds:
 
 ## Deployment
 
-The application is deployed manually to [Cloudflare Workers Assets](https://developers.cloudflare.com/workers/static-assets/) from a local machine via:
+The application is deployed manually to [Cloudflare Workers](https://developers.cloudflare.com/workers/) from a local machine via:
 
 ```sh
 pnpm ship
 ```
 
+`GOOGLE_MAPS_API_KEY` must be set as a Worker secret in production: `wrangler secret put GOOGLE_MAPS_API_KEY`.
+
 ## Technology Stack
 
-- **Frontend**: HTML, CSS (Tailwind), JavaScript
+- **Frontend**: [Astro](https://astro.build/) with the `@astrojs/cloudflare` adapter, CSS (Tailwind v4), JavaScript
 - **Mapping**: Leaflet.js for interactive maps
 - **Data**: Google Sheets → CSV → JSON pipeline
-- **Build**: Node.js scripts with pnpm package manager
-- **Deployment**: Cloudflare Workers Assets (via `pnpm ship`)
+- **Build**: Astro/Vite with Node.js helper scripts, pnpm package manager
+- **Deployment**: Single Cloudflare Worker — static assets + on-demand photo API routes (via `pnpm ship`)
 - **Environment**: Mise for development tooling
 
 ## Development Notes
@@ -185,9 +199,9 @@ pnpm ship
 - The application uses a responsive design that works on both desktop and mobile
 - Map view is available on larger screens, with a list-only view on mobile
 - Data conversion happens automatically during the build process
-- Photo lookups are served through the Cloudflare Worker, so local development should use `pnpm dev` instead of plain Vite
+- Photo lookups are served by on-demand Astro API routes running on the same Worker, so local development should use `pnpm dev` (not `wrangler dev` directly) to get both the frontend and those routes
 - `pnpm update-data` requires `GOOGLE_MAPS_API_KEY` when new restaurants need Google place IDs
-- All source code is in the `src/` directory for easy deployment
+- All source code is in the `src/` directory; the site is a single page today but is structured as an Astro template (layout + components) to support adding more pages, e.g. one per restaurant
 
 ## Contributing
 

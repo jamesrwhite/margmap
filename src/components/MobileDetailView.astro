@@ -1,0 +1,62 @@
+---
+---
+
+<div id="mobile-detail-view" class="hidden lg:hidden fixed left-0 right-0 bg-white shadow-xl transition-transform duration-300" style="z-index: 1000; top: calc(50vh + var(--header-height)); bottom: 0; overflow-y: auto;">
+    <!-- Header with close button -->
+    <div class="p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 z-10 bg-white">
+        <h2 class="text-xl font-bold text-gray-900" id="mobile-detail-name"></h2>
+        <button id="close-mobile-detail" class="text-gray-400 hover:text-gray-600 p-1" aria-label="Close restaurant detail panel">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4">
+        <div id="mobile-detail-photo-shell" class="detail-photo-shell mb-6 hidden">
+            <div id="mobile-detail-photo" class="detail-photo is-empty">
+                <div class="detail-photo-placeholder">Photo unavailable</div>
+            </div>
+            <div id="mobile-detail-photo-attribution" class="detail-photo-attribution hidden"></div>
+        </div>
+
+        <!-- Key Info -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Rating</div>
+                <div class="text-3xl font-bold text-gray-900" id="mobile-detail-rating"></div>
+            </div>
+            <div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Value</div>
+                <div class="text-3xl font-bold text-gray-900" id="mobile-detail-value"></div>
+            </div>
+            <div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Price</div>
+                <div class="text-3xl font-bold text-gray-900" id="mobile-detail-price"></div>
+            </div>
+            <div class="col-span-3">
+                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Location</div>
+                <a id="mobile-detail-location" href="#" target="_blank" rel="noopener noreferrer" class="text-base font-medium text-blue-600 hover:text-blue-800 inline-flex items-center gap-1">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span></span>
+                </a>
+            </div>
+            <div class="col-span-3">
+                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Date Visited</div>
+                <div class="text-base font-medium text-gray-900" id="mobile-detail-date"></div>
+            </div>
+        </div>
+
+        <!-- Detailed Ratings -->
+        <div>
+            <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Detailed Ratings</h3>
+            <div id="mobile-detail-ratings" class="space-y-3">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>

@@ -176,7 +176,7 @@ document.getElementById('rating-min-mobile').addEventListener('input', () => syn
 
 async function loadCSV() {
     try {
-        const response = await fetch('./data/ratings.json');
+        const response = await fetch('/data/ratings.json');
         const data = await response.json();
         return data;
     } catch (error) {

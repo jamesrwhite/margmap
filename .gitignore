@@ -1,8 +1,10 @@
 .wrangler
+.dev.vars
 .env.local
 .pnpm-store
 node_modules
 dist
 *.log
-src/data/ratings.json
+public/data/ratings.json
+.astro
 .claude/worktrees

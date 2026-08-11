@@ -1,0 +1,66 @@
+---
+---
+
+<div id="mobile-menu" class="fixed inset-0 bg-black/50 lg:hidden hidden" style="z-index: 999;"></div>
+
+<div id="mobile-filters" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-lg transform translate-x-full transition-transform duration-300 lg:hidden overflow-y-auto" style="z-index: 1001;">
+    <div class="p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 bg-white">
+        <h2 class="text-lg font-semibold text-gray-900">Filters</h2>
+        <button id="close-mobile-menu" class="text-gray-400 hover:text-gray-600" aria-label="Close filters panel">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+    <div class="p-4 space-y-4">
+        <div>
+            <label for="search-input-mobile" class="block text-xs font-medium text-gray-700 mb-1">Search Restaurants</label>
+            <input type="text" id="search-input-mobile" placeholder="Search by name..." class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-hidden focus:ring-2 focus:ring-gray-700" />
+        </div>
+        <div class="space-y-2">
+            <button id="locate-me-mobile" type="button" class="w-full rounded-md bg-gray-900 text-white px-3 py-2 text-sm font-medium hover:bg-gray-800 transition">Use My Location</button>
+            <p id="location-status-mobile" class="text-xs text-gray-600 min-h-4"></p>
+        </div>
+        <div>
+            <label for="country-filter-mobile" class="block text-xs font-medium text-gray-700 mb-1">Country</label>
+            <select id="country-filter-mobile" class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-hidden focus:ring-2 focus:ring-gray-700">
+                <option value="">All Countries</option>
+            </select>
+        </div>
+        <div>
+            <label for="sort-by-mobile" class="block text-xs font-medium text-gray-700 mb-1">Sort by</label>
+            <select id="sort-by-mobile" class="w-full border border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-hidden focus:ring-2 focus:ring-gray-700">
+                <option value="rating-desc">Rating (High to Low)</option>
+                <option value="rating-asc">Rating (Low to High)</option>
+                <option value="date-desc">Date (Newest)</option>
+                <option value="date-asc">Date (Oldest)</option>
+                <option value="price-desc">Price (High to Low)</option>
+                <option value="price-asc">Price (Low to High)</option>
+                <option value="value-desc">Value (High to Low)</option>
+                <option value="value-asc">Value (Low to High)</option>
+            </select>
+        </div>
+        <div>
+            <label for="rating-min-mobile" class="block text-xs font-medium text-gray-700 mb-1">Minimum Rating</label>
+            <div class="flex items-center space-x-2">
+                <input type="range" id="rating-min-mobile" min="0" max="10" value="0" step="0.1" class="flex-1" />
+                <span class="text-xs text-gray-600" id="rating-display-mobile">0+</span>
+            </div>
+            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span>0</span>
+                <span>10</span>
+            </div>
+        </div>
+        <button id="clear-filters-mobile" type="button" class="hidden w-full rounded-md border border-gray-800 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Clear Filters</button>
+        <hr class="my-2" />
+        <div>
+            <div class="flex items-center justify-between mb-2 gap-3">
+                <h3 class="text-sm font-semibold text-gray-900">Restaurants</h3>
+                <span id="results-count-mobile" class="text-xs font-medium text-gray-500">0 shown</span>
+            </div>
+            <div id="restaurants-list-mobile" class="space-y-1 divide-y divide-gray-200">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
