@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import cloudflare from '@astrojs/cloudflare';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
     site: 'https://margmap.com',
@@ -9,6 +10,7 @@ export default defineConfig({
         port: 8787,
         host: '127.0.0.1',
     },
+    integrations: [sitemap()],
     // This app has no cookies/session usage; skip the adapter's default
     // auto-provisioned Cloudflare KV session binding.
     session: false,
