@@ -290,7 +290,7 @@ function renderRestaurants(restaurantsToRender) {
                     </span>
                 </div>
                 <div class="text-xs text-gray-600">${restaurant.Location}, ${restaurant.Country}</div>
-                <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • ${restaurant.Price} • Value ${formatValue(restaurant.Value)}</div>
+                <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • Value ${formatValue(restaurant.Value)} • ${restaurant.Price}</div>
             `;
             return button;
         };
@@ -420,12 +420,12 @@ function updateMapMarkers(filteredRestaurants) {
                                 <div class="popup-value">${restaurant.mScore}</div>
                             </div>
                             <div>
-                                <div class="popup-label">Price</div>
-                                <div class="popup-value">${restaurant.Price}</div>
-                            </div>
-                            <div>
                                 <div class="popup-label">Value</div>
                                 <div class="popup-value">${formatValue(restaurant.Value)}</div>
+                            </div>
+                            <div>
+                                <div class="popup-label">Price</div>
+                                <div class="popup-value">${restaurant.Price}</div>
                             </div>
                             <div class="popup-location-full">
                                 <div class="popup-location-label">Location</div>
