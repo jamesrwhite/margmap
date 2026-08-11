@@ -2,7 +2,7 @@
     "name": "margmap",
     "version": "1.0.0",
     "description": "A web application for visualizing and rating pizza places on an interactive map",
-    "packageManager": "pnpm@10.33.0",
+    "packageManager": "pnpm@11.20.0",
     "type": "module",
     "scripts": {
         "dev": "node scripts/dev-worker.js",
@@ -23,13 +23,13 @@
         "leaflet": "^1.9.4"
     },
     "devDependencies": {
-        "autoprefixer": "^10.4.27",
-        "csv-parse": "^6.2.1",
-        "postcss": "^8.5.10",
+        "autoprefixer": "^10.5.4",
+        "csv-parse": "^7.0.2",
+        "postcss": "^8.5.25",
         "tailwindcss": "^3.4.19",
-        "vite": "^6.4.2",
+        "vite": "^8.2.0",
         "vite-plugin-html-minifier": "^1.0.5",
-        "wrangler": "^4.80.0"
+        "wrangler": "^4.118.0"
     },
     "private": true
 }
