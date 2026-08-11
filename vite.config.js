@@ -16,7 +16,7 @@ export default defineConfig({
         emptyOutDir: true,
         rollupOptions: {
             input: {
-                main: resolve(__dirname, 'src/index.html'),
+                main: resolve(import.meta.dirname, 'src/index.html'),
             },
         },
     },
@@ -25,10 +25,10 @@ export default defineConfig({
         {
             name: 'copy-data',
             closeBundle() {
-                const distData = resolve(__dirname, 'dist', 'data');
+                const distData = resolve(import.meta.dirname, 'dist', 'data');
                 mkdirSync(distData, { recursive: true });
                 copyFileSync(
-                    resolve(__dirname, 'src', 'data', 'ratings.json'),
+                    resolve(import.meta.dirname, 'src', 'data', 'ratings.json'),
                     resolve(distData, 'ratings.json')
                 );
             },
