@@ -230,11 +230,34 @@ html {
     font-family: system-ui, -apple-system, sans-serif;
 }
 
+.popup-title-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+    color: #111827;
+    text-decoration: none;
+}
+
+.popup-title-link:hover .popup-title {
+    text-decoration: underline;
+}
+
 .popup-title {
     font-size: 16px;
     font-weight: bold;
     color: #111827;
-    margin-bottom: 8px;
+}
+
+.popup-title-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #6b7280;
+}
+
+.popup-title-link:hover .popup-title-icon {
+    color: #2563eb;
 }
 
 .popup-grid {

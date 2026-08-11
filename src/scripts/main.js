@@ -1,4 +1,5 @@
 import L from 'leaflet';
+import { slugify } from '../lib/slug.js';
 
 // Make Leaflet available globally
 window.L = L;
@@ -202,6 +203,28 @@ function isMobileView() {
     return window.matchMedia('(max-width: 1023px)').matches;
 }
 
+function getRestaurantSlugPath(restaurant) {
+    return `${slugify(restaurant.Country)}/${slugify(restaurant.Name)}`;
+}
+
+function getRestaurantUrl(restaurant) {
+    return `/r/${getRestaurantSlugPath(restaurant)}`;
+}
+
+function updateUrlForSelectedRestaurant(restaurant) {
+    const search = restaurant ? `?c=${slugify(restaurant.Country)}&r=${slugify(restaurant.Name)}` : '';
+    window.history.replaceState(null, '', `${window.location.pathname}${search}`);
+}
+
+function findRestaurantFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const countrySlug = params.get('c');
+    const nameSlug = params.get('r');
+    if (!countrySlug || !nameSlug) return null;
+
+    return restaurants.find((restaurant) => slugify(restaurant.Country) === countrySlug && slugify(restaurant.Name) === nameSlug);
+}
+
 function getRatingColor(rating) {
     const score = parseFloat(rating);
     if (score >= 8) return 'bg-red-100 text-red-800';
@@ -283,11 +306,18 @@ function renderRestaurants(restaurantsToRender) {
             };
 
             button.innerHTML = `
-                <div class="flex justify-between items-start mb-1">
-                    <div class="font-medium text-gray-900 text-sm">${restaurant.Name}</div>
-                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${getRatingColor(restaurant.mScore)}">
-                        ${restaurant.mScore}
-                    </span>
+                <div class="flex justify-between items-start mb-1 gap-2">
+                    <div class="font-medium text-gray-900 text-sm truncate">${restaurant.Name}</div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <a href="${getRestaurantUrl(restaurant)}" class="p-1 -m-1 rounded text-gray-400 hover:text-blue-600 hover:bg-blue-50" title="View full details page" aria-label="View full details page for ${restaurant.Name}" onclick="event.stopPropagation()">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${getRatingColor(restaurant.mScore)}">
+                            ${restaurant.mScore}
+                        </span>
+                    </div>
                 </div>
                 <div class="text-xs text-gray-600">${restaurant.Location}, ${restaurant.Country}</div>
                 <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • Value ${formatValue(restaurant.Value)} • ${restaurant.Price}</div>
@@ -413,7 +443,12 @@ function updateMapMarkers(filteredRestaurants) {
             if (!isMobileView()) {
                 marker.bindPopup(`
                     <div class="popup-container">
-                        <div class="popup-title">${restaurant.Name}</div>
+                        <a href="${getRestaurantUrl(restaurant)}" class="popup-title-link" title="View full details page">
+                            <span class="popup-title">${restaurant.Name}</span>
+                            <svg class="popup-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
                         <div class="popup-grid">
                             <div>
                                 <div class="popup-label">Overall Rating</div>
@@ -469,6 +504,7 @@ function updateMapMarkers(filteredRestaurants) {
 
 function showDetailInSidebar(restaurant) {
     selectedRestaurant = restaurant;
+    updateUrlForSelectedRestaurant(restaurant);
     detailPhotoRequestToken += 1;
     loadDetailPhoto(restaurant, detailPhotoRequestToken);
     const ratingsHtml = generateRatingsHtml(getRestaurantAttributes(restaurant));
@@ -498,6 +534,11 @@ function showDetailInSidebar(restaurant) {
     mobileLocationLink.href = googleMapsUrl;
     mobileLocationLink.querySelector('span').textContent = location;
 
+    // Update "View More" links
+    const restaurantUrl = getRestaurantUrl(restaurant);
+    document.getElementById('sidebar-detail-view-link').href = restaurantUrl;
+    document.getElementById('mobile-detail-view-link').href = restaurantUrl;
+
     document.getElementById('sidebar-detail-ratings').innerHTML = ratingsHtml;
     document.getElementById('mobile-detail-ratings').innerHTML = ratingsHtml;
 
@@ -514,6 +555,7 @@ function hideDetailViews() {
     document.getElementById('mobile-detail-view').classList.add('hidden');
     document.getElementById('map').classList.remove('mobile-detail-open');
     selectedRestaurant = null;
+    updateUrlForSelectedRestaurant(null);
     detailPhotoRequestToken += 1;
     resetDetailPhotos();
     if (map) map.closePopup();
@@ -726,10 +768,18 @@ async function initMap() {
 }
 
 // Initialize
+function openRestaurantFromUrl() {
+    const restaurant = findRestaurantFromUrl();
+    if (restaurant) {
+        focusOnRestaurant(restaurant);
+    }
+}
+
 async function init() {
     restaurants = await loadCSV();
     await initMap();
     filterAndSort();
+    openRestaurantFromUrl();
 }
 
 init();

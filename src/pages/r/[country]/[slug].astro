@@ -1,0 +1,160 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import Layout from '../../../layouts/Layout.astro';
+import { slugify } from '../../../lib/slug.js';
+
+const RATING_ATTRIBUTES = ['Crust', 'Dough', 'Sauce', 'Cheese', 'Basil', 'Sliced', 'Sloppiness', 'Saltiness', 'Oiliness'];
+
+function getRatingColorHex(mScore) {
+    const score = parseFloat(mScore);
+    if (score >= 8) return '#ef4444';
+    if (score >= 7) return '#f97316';
+    if (score >= 6) return '#eab308';
+    return '#6b7280';
+}
+
+export async function getStaticPaths() {
+    const dataPath = path.resolve('public/data/ratings.json');
+    const restaurants = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+
+    return restaurants.map((restaurant) => ({
+        params: { country: slugify(restaurant.Country), slug: slugify(restaurant.Name) },
+        props: { restaurant },
+    }));
+}
+
+const { restaurant } = Astro.props;
+const location = `${restaurant.Location}, ${restaurant.Country}`;
+const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restaurant.Name} ${restaurant.Location} ${restaurant.Country}`)}`;
+const value = parseFloat(restaurant.Value).toFixed(1);
+const ratingColor = getRatingColorHex(restaurant.mScore);
+const attributes = RATING_ATTRIBUTES.map((name) => ({ name, value: parseInt(restaurant[name], 10) }));
+const title = `${restaurant.Name} — MargMap`;
+const description = `${restaurant.Name} in ${location} scored ${restaurant.mScore}/10 for Margherita pizza on MargMap. Price ${restaurant.Price}.`;
+---
+
+<Layout title={title} description={description}>
+    <div class="min-h-screen px-4 py-8 sm:px-8 sm:py-12">
+        <div class="mx-auto max-w-2xl">
+            <a href="/" class="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800">
+                &larr; Back to map
+            </a>
+
+            <div class="mt-4 detail-photo-shell">
+                <div id="detail-photo" class="detail-photo is-empty" data-place-id={restaurant.googlePlaceId} data-restaurant-name={restaurant.Name}>
+                    <div class="detail-photo-placeholder">Photo unavailable</div>
+                </div>
+                <div id="detail-photo-attribution" class="detail-photo-attribution hidden"></div>
+            </div>
+
+            <h1 class="mt-6 text-3xl font-bold text-gray-900">{restaurant.Name}</h1>
+            <p class="mt-1 text-base text-gray-600">{location}</p>
+
+            <div class="mt-6 grid grid-cols-3 gap-4 panel-callout">
+                <div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Rating</div>
+                    <div class="text-3xl font-bold" style={`color: ${ratingColor}`}>{restaurant.mScore}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Value</div>
+                    <div class="text-3xl font-bold text-gray-900">{value}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Price</div>
+                    <div class="text-3xl font-bold text-gray-900">{restaurant.Price}</div>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-4">
+                <div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Location</div>
+                    <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer" class="text-base font-medium text-blue-600 hover:text-blue-800 inline-flex items-center gap-1">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span>{location}</span>
+                    </a>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Date Visited</div>
+                    <div class="text-base font-medium text-gray-900">{restaurant.Date}</div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h2 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Detailed Ratings</h2>
+                <div class="space-y-3">
+                    {attributes.map((attr) => (
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">{attr.name}</span>
+                                <span class="text-sm font-medium text-gray-700">{attr.value}/10</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style={`width: ${(attr.value / 10) * 100}%`}></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function buildAttributionMarkup(authorAttributions = []) {
+            if (authorAttributions.length === 0) return '';
+            const links = authorAttributions.map((entry) => {
+                const displayName = entry.displayName || 'Google Maps';
+                return entry.uri
+                    ? `<a href="${entry.uri}" target="_blank" rel="noopener noreferrer">${displayName}</a>`
+                    : displayName;
+            });
+            return `Photo: ${links.join(', ')}`;
+        }
+
+        async function loadPhoto() {
+            const container = document.getElementById('detail-photo');
+            const attribution = document.getElementById('detail-photo-attribution');
+            const placeId = container?.dataset.placeId;
+            const restaurantName = container?.dataset.restaurantName || '';
+            if (!container || !placeId) return;
+
+            container.classList.remove('is-empty');
+            container.classList.add('is-loading');
+            container.innerHTML = '<div class="detail-photo-placeholder">Loading photo...</div>';
+
+            try {
+                const response = await fetch(`/api/place-photo/${encodeURIComponent(placeId)}?w=1200&h=900`);
+                if (!response.ok) throw new Error('Photo lookup failed');
+
+                const payload = await response.json();
+                if (!payload.imageUrl) throw new Error('No photo available');
+
+                container.classList.remove('is-loading');
+                container.innerHTML = `<img src="${payload.imageUrl}" alt="${restaurantName} on Google Maps">`;
+
+                const attributionMarkup = buildAttributionMarkup(payload.authorAttributions);
+                attribution.innerHTML = attributionMarkup;
+                attribution.classList.toggle('hidden', attributionMarkup === '');
+            } catch (error) {
+                container.classList.remove('is-loading');
+                container.classList.add('is-empty');
+                container.innerHTML = '<div class="detail-photo-placeholder">Photo unavailable</div>';
+            }
+        }
+
+        loadPhoto();
+    </script>
+</Layout>
+
+<style is:global>
+    /* The app shell sets html/body to overflow: hidden for the full-screen map page;
+       this page needs normal document scrolling. */
+    html,
+    body {
+        overflow: auto;
+        height: auto;
+    }
+</style>

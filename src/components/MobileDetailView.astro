@@ -3,13 +3,16 @@
 
 <div id="mobile-detail-view" class="hidden lg:hidden fixed left-0 right-0 bg-white shadow-xl transition-transform duration-300" style="z-index: 1000; top: calc(50vh + var(--header-height)); bottom: 0; overflow-y: auto;">
     <!-- Header with close button -->
-    <div class="p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 z-10 bg-white">
-        <h2 class="text-xl font-bold text-gray-900" id="mobile-detail-name"></h2>
-        <button id="close-mobile-detail" class="text-gray-400 hover:text-gray-600 p-1" aria-label="Close restaurant detail panel">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
+    <div class="p-4 border-b border-gray-700 flex justify-between items-center gap-2 sticky top-0 z-10 bg-white">
+        <h2 class="text-xl font-bold text-gray-900 truncate" id="mobile-detail-name"></h2>
+        <div class="flex items-center gap-3 shrink-0">
+            <a id="mobile-detail-view-link" href="#" class="text-sm font-medium text-blue-600 hover:text-blue-800 whitespace-nowrap">View More &rarr;</a>
+            <button id="close-mobile-detail" class="text-gray-400 hover:text-gray-600 p-1" aria-label="Close restaurant detail panel">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- Content -->

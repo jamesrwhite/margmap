@@ -10,6 +10,8 @@ const {
     title = 'MargMap | Rating the one true Pizza',
     description = 'Browse MargMap to discover pizza ratings, filter by country and score, and explore the best pies on an interactive map.',
 } = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!DOCTYPE html>
@@ -23,7 +25,7 @@ const {
     <meta property="og:title" content={title} />
     <meta property="og:description" content="Explore Margherita pizza ratings from around the world." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://margmap.com/" />
+    <meta property="og:url" content={canonicalUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content="Filter, compare, and explore pizza ratings across countries on an interactive map." />
