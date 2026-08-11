@@ -95,6 +95,8 @@
                     <option value="date-asc">Date (Oldest)</option>
                     <option value="price-desc">Price (High to Low)</option>
                     <option value="price-asc">Price (Low to High)</option>
+                    <option value="value-desc">Value (High to Low)</option>
+                    <option value="value-asc">Value (Low to High)</option>
                 </select>
             </div>
             <div>
@@ -165,6 +167,8 @@
                             <option value="date-asc">Date (Oldest)</option>
                             <option value="price-desc">Price (High to Low)</option>
                             <option value="price-asc">Price (Low to High)</option>
+                            <option value="value-desc">Value (High to Low)</option>
+                            <option value="value-asc">Value (Low to High)</option>
                         </select>
                     </div>
                     <div>
@@ -218,7 +222,7 @@
                 </div>
 
                 <!-- Key Info -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="grid grid-cols-3 gap-4 mb-6">
                     <div>
                         <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Rating</div>
                         <div class="text-3xl font-bold text-gray-900" id="sidebar-detail-rating"></div>
@@ -227,7 +231,11 @@
                         <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Price</div>
                         <div class="text-3xl font-bold text-gray-900" id="sidebar-detail-price"></div>
                     </div>
-                    <div class="col-span-2">
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Value</div>
+                        <div class="text-3xl font-bold text-gray-900" id="sidebar-detail-value"></div>
+                    </div>
+                    <div class="col-span-3">
                         <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Location</div>
                         <a id="sidebar-detail-location" href="#" target="_blank" rel="noopener noreferrer" class="text-base font-medium text-blue-600 hover:text-blue-800 inline-flex items-center gap-1">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,7 +245,7 @@
                             <span></span>
                         </a>
                     </div>
-                    <div class="col-span-2">
+                    <div class="col-span-3">
                         <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Date Visited</div>
                         <div class="text-base font-medium text-gray-900" id="sidebar-detail-date"></div>
                     </div>
@@ -276,7 +284,7 @@
             </div>
 
             <!-- Key Info -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-3 gap-4 mb-6">
                 <div>
                     <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Rating</div>
                     <div class="text-3xl font-bold text-gray-900" id="mobile-detail-rating"></div>
@@ -285,7 +293,11 @@
                     <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Price</div>
                     <div class="text-3xl font-bold text-gray-900" id="mobile-detail-price"></div>
                 </div>
-                <div class="col-span-2">
+                <div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Value</div>
+                    <div class="text-3xl font-bold text-gray-900" id="mobile-detail-value"></div>
+                </div>
+                <div class="col-span-3">
                     <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Location</div>
                     <a id="mobile-detail-location" href="#" target="_blank" rel="noopener noreferrer" class="text-base font-medium text-blue-600 hover:text-blue-800 inline-flex items-center gap-1">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,7 +307,7 @@
                         <span></span>
                     </a>
                 </div>
-                <div class="col-span-2">
+                <div class="col-span-3">
                     <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Date Visited</div>
                     <div class="text-base font-medium text-gray-900" id="mobile-detail-date"></div>
                 </div>
