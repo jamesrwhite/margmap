@@ -18,13 +18,14 @@ const rows = parse(csvContent, {
 });
 
 // Generate markdown table
-const tableHeaders = '| Name | Rating | Location | Country | Date | Price | Crust | Dough | Sauce | Cheese | Basil | Sliced | Sloppiness | Saltiness | Oiliness |';
-const tableSeparator = '|------|--------|----------|---------|------|-------|-------|-------|-------|--------|-------|--------|------------|-----------|----------|';
+const tableHeaders = '| Name | Rating | Value | Location | Country | Date | Price | Crust | Dough | Sauce | Cheese | Basil | Sliced | Sloppiness | Saltiness | Oiliness |';
+const tableSeparator = '|------|--------|-------|----------|---------|------|-------|-------|-------|-------|--------|-------|--------|------------|-----------|----------|';
 
 const tableRows = rows.map(row => {
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(row.Name + ' ' + row.Location + ' ' + row.Country)}`;
     const nameLink = `[${row.Name}](${googleMapsUrl})`;
-    return `| ${nameLink} | ${row.mScore} | ${row.Location} | ${row.Country} | ${row.Date} | ${row.Price} | ${row.Crust} | ${row.Dough} | ${row.Sauce} | ${row.Cheese} | ${row.Basil} | ${row.Sliced} | ${row.Sloppiness} | ${row.Saltiness} | ${row.Oiliness} |`;
+    const value = Number.parseFloat(row.Value).toFixed(1);
+    return `| ${nameLink} | ${row.mScore} | ${value} | ${row.Location} | ${row.Country} | ${row.Date} | ${row.Price} | ${row.Crust} | ${row.Dough} | ${row.Sauce} | ${row.Cheese} | ${row.Basil} | ${row.Sliced} | ${row.Sloppiness} | ${row.Saltiness} | ${row.Oiliness} |`;
 }).join('\n');
 
 const markdownTable = `${tableHeaders}\n${tableSeparator}\n${tableRows}`;

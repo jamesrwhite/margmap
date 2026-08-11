@@ -194,6 +194,10 @@ function parsePrice(priceStr) {
     return parseFloat(priceStr.replace('£', ''));
 }
 
+function formatValue(value) {
+    return parseFloat(value).toFixed(1);
+}
+
 function isMobileView() {
     return window.matchMedia('(max-width: 1023px)').matches;
 }
@@ -286,7 +290,7 @@ function renderRestaurants(restaurantsToRender) {
                     </span>
                 </div>
                 <div class="text-xs text-gray-600">${restaurant.Location}, ${restaurant.Country}</div>
-                <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • ${restaurant.Price}</div>
+                <div class="text-xs text-gray-500 mt-1">${restaurant.Date} • ${restaurant.Price} • Value ${formatValue(restaurant.Value)}</div>
             `;
             return button;
         };
@@ -419,6 +423,10 @@ function updateMapMarkers(filteredRestaurants) {
                                 <div class="popup-label">Price</div>
                                 <div class="popup-value">${restaurant.Price}</div>
                             </div>
+                            <div>
+                                <div class="popup-label">Value</div>
+                                <div class="popup-value">${formatValue(restaurant.Value)}</div>
+                            </div>
                             <div class="popup-location-full">
                                 <div class="popup-location-label">Location</div>
                                 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.Name + ' ' + restaurant.Location + ' ' + restaurant.Country)}" target="_blank" rel="noopener noreferrer" class="popup-location-value" style="color: #2563eb; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
@@ -472,6 +480,7 @@ function showDetailInSidebar(restaurant) {
         ['sidebar-detail-name', 'mobile-detail-name', restaurant.Name],
         ['sidebar-detail-rating', 'mobile-detail-rating', restaurant.mScore],
         ['sidebar-detail-price', 'mobile-detail-price', restaurant.Price],
+        ['sidebar-detail-value', 'mobile-detail-value', formatValue(restaurant.Value)],
         ['sidebar-detail-date', 'mobile-detail-date', restaurant.Date]
     ];
 
@@ -673,6 +682,10 @@ function filterAndSort() {
                 return parsePrice(b.Price) - parsePrice(a.Price);
             case 'price-asc':
                 return parsePrice(a.Price) - parsePrice(b.Price);
+            case 'value-desc':
+                return parseFloat(b.Value) - parseFloat(a.Value);
+            case 'value-asc':
+                return parseFloat(a.Value) - parseFloat(b.Value);
             default:
                 return 0;
         }
