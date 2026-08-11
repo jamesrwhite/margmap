@@ -5,3 +5,4 @@ node_modules
 dist
 *.log
 src/data/ratings.json
+.claude/worktrees
