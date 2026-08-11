@@ -52,8 +52,7 @@ A web application for visualizing and rating pizza places on an interactive map.
 ├── dist/                 # Production build output (generated)
 ├── worker.js             # Cloudflare Worker routes and photo proxy
 ├── vite.config.js        # Vite build configuration
-├── tailwind.config.js    # Tailwind CSS configuration
-├── postcss.config.js     # PostCSS configuration
+├── postcss.config.js     # PostCSS configuration (Tailwind CSS v4 plugin)
 └── mise.toml            # Development environment config
 ```
 
