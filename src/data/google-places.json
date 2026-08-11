@@ -166,5 +166,11 @@
     "matchedName": "MARGHE",
     "matchedAddress": "Via Plinio, 6, 20129 Milano MI, Italy",
     "matchedAt": "2026-07-31T21:02:35.185Z"
+  },
+  "bonturo pizzeria astrusa::lucca::italy": {
+    "googlePlaceId": "ChIJb1c4-ruD1RIReWV-DBxAgvs",
+    "matchedName": "Bonturo Pizzeria Astrusa",
+    "matchedAddress": "Via dell'Anfiteatro, 37/38, 55100 Lucca LU, Italy",
+    "matchedAt": "2026-08-11T07:32:53.507Z"
   }
 }
