@@ -1,13 +1,22 @@
-import L from 'leaflet';
+import maplibregl from 'maplibre-gl';
 import { slugify } from '../lib/slug.js';
 
-// Make Leaflet available globally
-window.L = L;
+// MapLibre uses [lng, lat] ordering; restaurant records store Lat/Lon separately,
+// so every coordinate passed to the map below is written as [lon, lat].
+const CARTO_VOYAGER_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?key=cb1_2r3u_1_74f911e86716a291920477e0';
+
+function closeAllPopups() {
+    Object.values(markers).forEach((marker) => {
+        const popup = marker.getPopup();
+        if (popup && popup.isOpen()) {
+            marker.togglePopup();
+        }
+    });
+}
 
 let restaurants = [];
 let map;
 let markers = {};
-let markerLayer;
 let userMarker;
 let userSelectedRestaurant = false;
 let selectedRestaurant = null;
@@ -344,7 +353,7 @@ function getViewportRestaurants(restaurantsToCheck = filteredRestaurants) {
             return false;
         }
 
-        return bounds.contains([lat, lon]);
+        return bounds.contains([lon, lat]);
     });
 }
 
@@ -369,42 +378,40 @@ function focusOnRestaurant(restaurant) {
         selectedRestaurant = restaurant;
 
         // First, close any open popups
-        map.closePopup();
+        closeAllPopups();
 
-        // Force an immediate, non-animated pan first to ensure we move
-        map.panTo([lat, lon], { animate: false });
+        map.easeTo({
+            center: [lon, lat],
+            zoom: 12,
+            duration: 500
+        });
 
-        // Then set view with proper zoom
-        setTimeout(() => {
-            map.setView([lat, lon], 12, {
-                animate: true,
-                duration: 0.5
-            });
+        if (isMobileView()) {
+            showDetailInSidebar(restaurant);
+            return;
+        }
 
-            if (isMobileView()) {
-                showDetailInSidebar(restaurant);
-                return;
-            }
-
-            // Open the marker popup if it exists
-            const markerId = `${restaurant.Name}-${lat}-${lon}`;
-            if (markers[markerId]) {
-                setTimeout(() => {
-                    markers[markerId].openPopup();
-                }, 600);
-            }
-        }, 10);
+        // Open the marker popup if it exists
+        const markerId = `${restaurant.Name}-${lat}-${lon}`;
+        if (markers[markerId]) {
+            setTimeout(() => {
+                const popup = markers[markerId].getPopup();
+                if (popup && !popup.isOpen()) {
+                    markers[markerId].togglePopup();
+                }
+            }, 600);
+        }
     }
 }
 
 function updateMapMarkers(filteredRestaurants) {
-    if (!map || !markerLayer) return;
+    if (!map) return;
 
     // Clear existing markers
-    markerLayer.clearLayers();
+    Object.values(markers).forEach(marker => marker.remove());
     markers = {};
 
-    const bounds = [];
+    const points = [];
 
     // Add markers for filtered restaurants
     filteredRestaurants.forEach(restaurant => {
@@ -418,30 +425,34 @@ function updateMapMarkers(filteredRestaurants) {
             else if (rating >= 7) color = '#f97316'; // orange
             else if (rating >= 6) color = '#eab308'; // yellow
 
-            const icon = L.divIcon({
-                className: 'custom-marker',
-                html: `<div class="marker-badge" style="background-color: ${color};">${rating}</div>`,
-                iconSize: [32, 32],
-                iconAnchor: [16, 16]
-            });
+            const el = document.createElement('div');
+            el.className = 'marker-badge';
+            el.style.backgroundColor = color;
+            // Stack higher-rated badges above lower ones when they overlap. Keep the
+            // range small (0–100) so an open popup, which sits at z-index 500, always
+            // renders on top — see .maplibregl-popup in main.css.
+            el.style.zIndex = String(Math.round(rating * 10));
+            el.textContent = rating;
 
-            const marker = L.marker([lat, lon], {
-                icon: icon,
-                zIndexOffset: Math.round(rating * 100)
-            }).addTo(markerLayer);
+            const marker = new maplibregl.Marker({ element: el })
+                .setLngLat([lon, lat])
+                .addTo(map);
 
-            marker.on('click', () => {
+            // Don't stopPropagation here: MapLibre toggles the marker's bound popup
+            // from a delegated listener on the map, which only fires if the click
+            // is allowed to bubble.
+            el.addEventListener('click', () => {
                 selectedRestaurant = restaurant;
                 userSelectedRestaurant = true;
                 if (isMobileView()) {
-                    map.closePopup();
+                    closeAllPopups();
                     showDetailInSidebar(restaurant);
                 }
             });
 
             // Open detail view when popup is opened on desktop
             if (!isMobileView()) {
-                marker.bindPopup(`
+                const popup = new maplibregl.Popup({ maxWidth: '250px', offset: 20 }).setHTML(`
                     <div class="popup-container">
                         <a href="${getRestaurantUrl(restaurant)}" class="popup-title-link" title="View full details page">
                             <span class="popup-title">${restaurant.Name}</span>
@@ -474,9 +485,10 @@ function updateMapMarkers(filteredRestaurants) {
                             </div>
                         </div>
                     </div>
-                `, { maxWidth: 250 });
+                `);
 
-                marker.on('popupopen', () => {
+                marker.setPopup(popup);
+                popup.on('open', () => {
                     showDetailInSidebar(restaurant);
                 });
             }
@@ -485,17 +497,21 @@ function updateMapMarkers(filteredRestaurants) {
             const markerId = `${restaurant.Name}-${lat}-${lon}`;
             markers[markerId] = marker;
 
-            bounds.push([lat, lon]);
+            points.push([lon, lat]);
         }
     });
 
     // Fit map to show all filtered markers (only if user hasn't manually selected)
-    if (!userSelectedRestaurant && bounds.length > 0) {
-        if (bounds.length === 1) {
-            map.setView(bounds[0], 10);
+    if (!userSelectedRestaurant && points.length > 0) {
+        if (points.length === 1) {
+            map.jumpTo({ center: points[0], zoom: 10 });
         } else {
+            const bounds = points.reduce(
+                (acc, point) => acc.extend(point),
+                new maplibregl.LngLatBounds(points[0], points[0])
+            );
             map.fitBounds(bounds, {
-                padding: [80, 80],
+                padding: 80,
                 animate: false
             });
         }
@@ -558,7 +574,7 @@ function hideDetailViews() {
     updateUrlForSelectedRestaurant(null);
     detailPhotoRequestToken += 1;
     resetDetailPhotos();
-    if (map) map.closePopup();
+    if (map) closeAllPopups();
 }
 
 function clearFilters() {
@@ -617,15 +633,13 @@ function showUserLocation(lat, lon) {
     if (!map) return;
 
     if (userMarker) {
-        userMarker.setLatLng([lat, lon]);
+        userMarker.setLngLat([lon, lat]);
     } else {
-        userMarker = L.circleMarker([lat, lon], {
-            radius: 8,
-            color: '#ffffff',
-            weight: 3,
-            fillColor: '#2563eb',
-            fillOpacity: 1
-        }).addTo(map);
+        const el = document.createElement('div');
+        el.className = 'user-location-dot';
+        userMarker = new maplibregl.Marker({ element: el })
+            .setLngLat([lon, lat])
+            .addTo(map);
     }
 }
 
@@ -640,9 +654,10 @@ function locateUser() {
     navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
         showUserLocation(latitude, longitude);
-        map.setView([latitude, longitude], 11, {
-            animate: true,
-            duration: 0.5
+        map.easeTo({
+            center: [longitude, latitude],
+            zoom: 11,
+            duration: 500
         });
 
         const candidates = filteredRestaurants.length > 0 ? filteredRestaurants : restaurants;
@@ -742,28 +757,26 @@ function filterAndSort() {
     syncViewportRestaurants();
 }
 
-async function initMap() {
-    map = L.map('map', {
-        worldCopyJump: false,
-        maxBounds: [[-60, -180], [85, 180]],
-        maxBoundsViscosity: 1.0,
-        zoomSnap: 0.25,
-        zoomDelta: 0.25
-    }).setView([20, 0], 2);
+function initMap() {
+    return new Promise((resolve) => {
+        map = new maplibregl.Map({
+            container: 'map',
+            style: CARTO_VOYAGER_STYLE,
+            center: [0, 20],
+            zoom: 2,
+            minZoom: 1,
+            maxZoom: 20,
+            maxBounds: [[-179.9, -59.9], [179.9, 84.9]],
+            renderWorldCopies: false
+        });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_2r3u_1_74f911e86716a291920477e0', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>',
-        maxZoom: 20,
-        minZoom: 1,
-        subdomains: 'abcd',
-        noWrap: true
-    }).addTo(map);
+        map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
-    // Create a layer group for markers
-    markerLayer = L.layerGroup().addTo(map);
+        map.on('moveend', () => {
+            syncViewportRestaurants();
+        });
 
-    map.on('moveend', () => {
-        syncViewportRestaurants();
+        map.once('load', () => resolve());
     });
 }
 

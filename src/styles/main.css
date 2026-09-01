@@ -1,4 +1,4 @@
-@import 'leaflet/dist/leaflet.css' layer(base);
+@import 'maplibre-gl/dist/maplibre-gl.css' layer(base);
 
 @import 'tailwindcss';
 
@@ -82,6 +82,16 @@ html {
     color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     cursor: pointer;
+}
+
+.user-location-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #2563eb;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+    z-index: 150;
 }
 
 .brand-mark {
@@ -225,6 +235,22 @@ html {
 }
 
 /* Popup styles */
+.maplibregl-popup {
+    z-index: 500;
+}
+
+.maplibregl-popup-content {
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+}
+
+.maplibregl-popup-close-button {
+    padding: 0 6px;
+    font-size: 16px;
+    color: #6b7280;
+}
+
 .popup-container {
     min-width: 200px;
     font-family: system-ui, -apple-system, sans-serif;

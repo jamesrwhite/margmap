@@ -19,7 +19,7 @@
         "clean": "rm -f src/data/ratings.csv public/data/ratings.json && rm -rf dist"
     },
     "dependencies": {
-        "leaflet": "^1.9.4"
+        "maplibre-gl": "5.24.0"
     },
     "devDependencies": {
         "@astrojs/cloudflare": "^14.2.0",
