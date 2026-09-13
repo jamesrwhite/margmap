@@ -18,6 +18,7 @@ A web application for visualizing and rating pizza places on an interactive map,
 | [Brewing Brothers The Imperial](https://www.google.com/maps/search/?api=1&query=Brewing%20Brothers%20The%20Imperial%20Hastings%20England) | 7.2 | 7.4 | Hastings | England | 25/04/2025 | £9.50 | 8 | 7 | 9 | 7 | 0 | 10 | 7 | 8 | 7 |
 | [The Crust](https://www.google.com/maps/search/?api=1&query=The%20Crust%20Bude%20England) | 7.2 | 6.6 | Bude | England | 13/08/2024 | £12.00 | 8 | 8 | 7 | 7 | 5 | 5 | 7 | 8 | 7 |
 | [Rustico](https://www.google.com/maps/search/?api=1&query=Rustico%20Hastings%20England) | 7.1 | 7.3 | Hastings | England | 03/05/2025 | £9.50 | 8 | 7 | 8 | 6 | 5 | 5 | 7 | 8 | 8 |
+| [Bunka Rooftop](https://www.google.com/maps/search/?api=1&query=Bunka%20Rooftop%20Hastings%20England) | 7 | 6.4 | Hastings | England | 12/09/2026 | £12.00 | 7 | 7 | 8 | 7 | 0 | 10 | 8 | 8 | 8 |
 | [Dough Ray Me](https://www.google.com/maps/search/?api=1&query=Dough%20Ray%20Me%20St%20Leonards-on-Sea%20England) | 6.9 | 6.6 | St Leonards-on-Sea | England | 17/07/2025 | £11.00 | 7 | 7 | 8 | 6 | 5 | 5 | 7 | 8 | 7 |
 | [Homeslice](https://www.google.com/maps/search/?api=1&query=Homeslice%20City%20of%20London%20England) | 6.9 | 5.8 | City of London | England | 02/02/2026 | £14.00 | 7 | 7 | 8 | 7 | 5 | 5 | 6 | 7 | 6 |
 | [Tredici](https://www.google.com/maps/search/?api=1&query=Tredici%20Cannes%20France) | 6.6 | 5.6 | Cannes | France | 09/08/2025 | £14.00 | 7 | 6 | 8 | 6 | 5 | 0 | 7 | 8 | 7 |

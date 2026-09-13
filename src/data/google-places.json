@@ -172,5 +172,11 @@
     "matchedName": "Bonturo Pizzeria Astrusa",
     "matchedAddress": "Via dell'Anfiteatro, 37/38, 55100 Lucca LU, Italy",
     "matchedAt": "2026-08-11T07:32:53.507Z"
+  },
+  "bunka rooftop::hastings::england": {
+    "googlePlaceId": "ChIJhxRY4C4b30cR8bX9msD26L0",
+    "matchedName": "Bunka",
+    "matchedAddress": "Observer Building Rooftop, 53 Cambridge Rd, Hastings TN34 1DT, UK",
+    "matchedAt": "2026-09-13T17:53:32.355Z"
   }
 }
