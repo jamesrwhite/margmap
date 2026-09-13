@@ -1,8 +1,9 @@
 ---
 import fs from 'node:fs';
 import path from 'node:path';
-import Layout from '../../../layouts/Layout.astro';
-import { slugify } from '../../../lib/slug.js';
+import Layout from '../../../../layouts/Layout.astro';
+import { slugify } from '../../../../lib/slug.js';
+import { getQualifyingPlaces } from '../../../../lib/bestPages.js';
 
 const RATING_ATTRIBUTES = ['Crust', 'Dough', 'Sauce', 'Cheese', 'Basil', 'Sliced', 'Sloppiness', 'Saltiness', 'Oiliness'];
 
@@ -17,15 +18,26 @@ function getRatingColorHex(mScore) {
 export async function getStaticPaths() {
     const dataPath = path.resolve('public/data/ratings.json');
     const restaurants = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+    const { locations, countries } = getQualifyingPlaces(restaurants);
 
     return restaurants.map((restaurant) => ({
-        params: { country: slugify(restaurant.Country), slug: slugify(restaurant.Name) },
-        props: { restaurant },
+        params: {
+            country: slugify(restaurant.Country),
+            location: slugify(restaurant.Location),
+            slug: slugify(restaurant.Name),
+        },
+        props: {
+            restaurant,
+            locationQualifies: locations.has(restaurant.Location),
+            countryQualifies: countries.has(restaurant.Country),
+        },
     }));
 }
 
-const { restaurant } = Astro.props;
+const { restaurant, locationQualifies, countryQualifies } = Astro.props;
 const location = `${restaurant.Location}, ${restaurant.Country}`;
+const locationBestHref = `/best-margherita-pizza-in-${slugify(restaurant.Location)}/`;
+const countryBestHref = `/best-margherita-pizza-in-${slugify(restaurant.Country)}/`;
 const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restaurant.Name} ${restaurant.Location} ${restaurant.Country}`)}`;
 const value = parseFloat(restaurant.Value).toFixed(1);
 const ratingColor = getRatingColorHex(restaurant.mScore);
@@ -99,6 +111,24 @@ const description = `${restaurant.Name} in ${location} scored ${restaurant.mScor
                     ))}
                 </div>
             </div>
+
+            {(locationQualifies || countryQualifies) && (
+                <div class="mt-8">
+                    <h2 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">See Also</h2>
+                    <div class="flex flex-col gap-2">
+                        {locationQualifies && (
+                            <a href={locationBestHref} class="text-sm font-medium text-blue-600 hover:text-blue-800">
+                                Best Margherita Pizza in {restaurant.Location} &rarr;
+                            </a>
+                        )}
+                        {countryQualifies && (
+                            <a href={countryBestHref} class="text-sm font-medium text-blue-600 hover:text-blue-800">
+                                Best Margherita Pizza in {restaurant.Country} &rarr;
+                            </a>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     </div>
 

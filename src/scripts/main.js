@@ -213,7 +213,7 @@ function isMobileView() {
 }
 
 function getRestaurantSlugPath(restaurant) {
-    return `${slugify(restaurant.Country)}/${slugify(restaurant.Name)}`;
+    return `${slugify(restaurant.Country)}/${slugify(restaurant.Location)}/${slugify(restaurant.Name)}`;
 }
 
 function getRestaurantUrl(restaurant) {
