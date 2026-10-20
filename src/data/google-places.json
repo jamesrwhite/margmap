@@ -178,5 +178,11 @@
     "matchedName": "Bunka",
     "matchedAddress": "Observer Building Rooftop, 53 Cambridge Rd, Hastings TN34 1DT, UK",
     "matchedAt": "2026-09-13T17:53:32.355Z"
+  },
+  "little bistro pizza::taipei::taiwan": {
+    "googlePlaceId": "ChIJR8e_mCyqQjQRXzPhp6wbMN0",
+    "matchedName": "Little bistro pizza",
+    "matchedAddress": "106, Taiwan, Taipei City, Da’an District, Longzhen Village, Rui'an St, 43號消防隊後方",
+    "matchedAt": "2026-10-20T08:23:41.925Z"
   }
 }
