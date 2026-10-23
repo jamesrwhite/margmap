@@ -34,6 +34,7 @@ A web application for visualizing and rating pizza places on an interactive map,
 | [Casa de Pier](https://www.google.com/maps/search/?api=1&query=Casa%20de%20Pier%20St%20Leonards-on-Sea%20England) | 5.2 | 5.2 | St Leonards-on-Sea | England | 16/05/2025 | £10.00 | 5 | 5 | 6 | 5 | 0 | 10 | 6 | 6 | 7 |
 | [Wetherspoons (Cornfield Garage)](https://www.google.com/maps/search/?api=1&query=Wetherspoons%20(Cornfield%20Garage)%20Eastbourne%20England) | 5.1 | 5.3 | Eastbourne | England | 08/03/2026 | £9.28 | 5 | 5 | 6 | 6 | 0 | 0 | 6 | 5 | 6 |
 | [Little Bistro Pizza](https://www.google.com/maps/search/?api=1&query=Little%20Bistro%20Pizza%20Taipei%20Taiwan) | 6.2 | 9.6 | Taipei | Taiwan | 20/10/2026 | £4.15 | 6 | 6 | 6 | 6 | 5 | 10 | 7 | 6 | 7 |
+| [Riverland Bar](https://www.google.com/maps/search/?api=1&query=Riverland%20Bar%20Melbourne%20Australia) | 6.6 | 5.7 | Melbourne | Australia | 22/10/2026 | £13.62 | 7 | 7 | 7 | 6 | 5 | 10 | 6 | 7 | 7 |
 
 ## Project Structure
 

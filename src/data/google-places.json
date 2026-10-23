@@ -184,5 +184,11 @@
     "matchedName": "Little bistro pizza",
     "matchedAddress": "106, Taiwan, Taipei City, Da’an District, Longzhen Village, Rui'an St, 43號消防隊後方",
     "matchedAt": "2026-10-20T08:23:41.925Z"
+  },
+  "riverland bar::melbourne::australia": {
+    "googlePlaceId": "ChIJT8T86bZC1moRiDuX5-Uuiv4",
+    "matchedName": "Riverland Bar",
+    "matchedAddress": "Federation Wharf Vaults 1-9, Melbourne VIC 3000, Australia",
+    "matchedAt": "2026-10-23T01:09:10.730Z"
   }
 }
