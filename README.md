@@ -35,6 +35,7 @@ A web application for visualizing and rating pizza places on an interactive map,
 | [Wetherspoons (Cornfield Garage)](https://www.google.com/maps/search/?api=1&query=Wetherspoons%20(Cornfield%20Garage)%20Eastbourne%20England) | 5.1 | 5.3 | Eastbourne | England | 08/03/2026 | £9.28 | 5 | 5 | 6 | 6 | 0 | 0 | 6 | 5 | 6 |
 | [Little Bistro Pizza](https://www.google.com/maps/search/?api=1&query=Little%20Bistro%20Pizza%20Taipei%20Taiwan) | 6.2 | 9.6 | Taipei | Taiwan | 20/10/2026 | £4.15 | 6 | 6 | 6 | 6 | 5 | 10 | 7 | 6 | 7 |
 | [Riverland Bar](https://www.google.com/maps/search/?api=1&query=Riverland%20Bar%20Melbourne%20Australia) | 6.6 | 5.7 | Melbourne | Australia | 22/10/2026 | £13.62 | 7 | 7 | 7 | 6 | 5 | 10 | 6 | 7 | 7 |
+| [Lucky Bay Brewing](https://www.google.com/maps/search/?api=1&query=Lucky%20Bay%20Brewing%20Esperance%20Australia) | 7 | 6.5 | Esperance | Australia | 30/10/2026 | £11.56 | 6 | 7 | 9 | 7 | 0 | 10 | 8 | 8 | 8 |
 
 ## Project Structure
 

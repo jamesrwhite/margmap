@@ -190,5 +190,11 @@
     "matchedName": "Riverland Bar",
     "matchedAddress": "Federation Wharf Vaults 1-9, Melbourne VIC 3000, Australia",
     "matchedAt": "2026-10-23T01:09:10.730Z"
+  },
+  "lucky bay brewing::esperance::australia": {
+    "googlePlaceId": "ChIJH4EQHu03WyoR2hj8A474n0Q",
+    "matchedName": "Lucky Bay Brewing",
+    "matchedAddress": "63 Bandy Creek Rd, Esperance WA 6450, Australia",
+    "matchedAt": "2026-10-31T02:40:19.281Z"
   }
 }
